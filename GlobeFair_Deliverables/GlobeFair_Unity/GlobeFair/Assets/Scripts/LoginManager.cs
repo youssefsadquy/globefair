@@ -2,12 +2,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Auth;
 using TMPro;
+using UnityEngine.SceneManagement;
+using Firebase.Extensions;
+
 
 public class LoginManager : MonoBehaviour
 {
     public TMP_InputField emailInputField;
     public TMP_InputField passwordInputField;
     public Button loginButton;
+    public GameObject userDashboardCanvas;
 
     private FirebaseAuth auth;
 
@@ -34,7 +38,7 @@ public class LoginManager : MonoBehaviour
         }
 
         // Sign in with email and password
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled)
             {
@@ -47,17 +51,19 @@ public class LoginManager : MonoBehaviour
                 return;
             }
 
-            // Firebase user has been created.
+            // Firebase user signed in successfully
             FirebaseUser newUser = task.Result.User;
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 newUser.DisplayName, newUser.UserId);
+
+            // Redirect to the UserDashboard
+            userDashboardCanvas.SetActive(true);
+            gameObject.transform.parent.gameObject.SetActive(false);
         });
     }
 
-
     void OnDestroy()
     {
-        // Remove listener to the login button
         loginButton.onClick.RemoveListener(LoginWithEmailPassword);
     }
 }

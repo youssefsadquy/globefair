@@ -5,7 +5,7 @@ using TMPro;
 using System.Collections.Generic;
 using Firebase.Firestore;
 using Firebase.Extensions;
-
+using UnityEngine.SceneManagement;
 
 public class SignupManager : MonoBehaviour
 {
@@ -15,6 +15,7 @@ public class SignupManager : MonoBehaviour
     public TMP_InputField confirmPasswordInputField;
     public Button signupButton;
     public TextMeshProUGUI feedbackText;
+    public GameObject userDashboardCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -85,7 +86,11 @@ public class SignupManager : MonoBehaviour
                     return;
                 }
                 UpdateFeedback("Signup successful!");
+
+                userDashboardCanvas.SetActive(true);
+                gameObject.transform.parent.gameObject.SetActive(false);
             });
+
         });
     }
 
