@@ -16,9 +16,9 @@ public class LoginManager : MonoBehaviour
     private FirebaseAuth auth;
 
     void Awake()
-    {
+    {  
         auth = FirebaseAuth.DefaultInstance;
-    }
+    } 
 
     void Start()
     {

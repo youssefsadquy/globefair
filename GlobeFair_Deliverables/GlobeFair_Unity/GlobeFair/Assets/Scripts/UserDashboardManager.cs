@@ -20,6 +20,8 @@ public class UserDashboardManager : MonoBehaviour
     public Button startGameButton;
     public Button logoutButton;
     public GameObject landingCanvas;
+    public GameObject loadingCanvas;
+    public Slider loadingProgressBar;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -40,7 +42,7 @@ public class UserDashboardManager : MonoBehaviour
         {
             FetchUserDetails();
             uploadCVButton.onClick.AddListener(() => UploadCV());
-            startGameButton.onClick.AddListener(() => StartGame());
+            startGameButton.onClick.AddListener(() => StartFair());
             logoutButton.onClick.AddListener(() => LogoutUser());
         }
         else
@@ -127,6 +129,34 @@ public class UserDashboardManager : MonoBehaviour
         }
     }
 
+    private IEnumerator DelayedLoad(string sceneName)
+    {
+        yield return new WaitForSeconds(1f); // 1 second delay
+
+        StartCoroutine(LoadGameScene(sceneName));
+    }
+
+    private IEnumerator WaitAndLoadScene(string sceneName)
+    {
+        yield return new WaitForEndOfFrame();
+
+        AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    private IEnumerator LoadGameScene(string sceneName)
+    {
+        AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
     private void LogoutUser()
     {
         auth.SignOut();
@@ -134,13 +164,18 @@ public class UserDashboardManager : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void StartGame()
+    public void StartFair()
     {
+        loadingCanvas.SetActive(true);
+
+        Canvas.ForceUpdateCanvases();
+
+        StartCoroutine(WaitAndLoadScene("GlobeFair"));
     }
 
     void OnDestroy()
     {
         uploadCVButton.onClick.RemoveListener(() => UploadCV());
-        startGameButton.onClick.RemoveListener(() => StartGame());
+        startGameButton.onClick.RemoveListener(() => StartFair());
     }
 }
