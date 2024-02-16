@@ -3,19 +3,17 @@ using Firebase.Firestore;
 using Firebase.Storage;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.IO;
 using System.Threading.Tasks;
-using SFB;
+using SFB; 
 using System.Collections;
 using Firebase.Extensions;
 using System;
 
-
 public class UserDashboardManager : MonoBehaviour
 {
-    public TextMeshProUGUI nameText;
-    public TextMeshProUGUI emailText;
+    public Text nameText;
+    public Text emailText;
     public Button uploadCVButton;
     public Button startGameButton;
     public Button logoutButton;
@@ -53,6 +51,8 @@ public class UserDashboardManager : MonoBehaviour
 
     private void FetchUserDetails()
     {
+        if (currentUser == null) return;
+
         DocumentReference userDocRef = db.Collection("users").Document(currentUser.UserId);
         userDocRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
@@ -65,14 +65,29 @@ public class UserDashboardManager : MonoBehaviour
             DocumentSnapshot snapshot = task.Result;
             if (snapshot.Exists)
             {
-                nameText.text = snapshot.GetValue<string>("FirstName");
-                emailText.text = snapshot.GetValue<string>("Email");
+                nameText.text = snapshot.GetValue<string>("FirstName") ?? "Name";
+                emailText.text = snapshot.GetValue<string>("Email") ?? "Email";
             }
             else
             {
                 Debug.LogError("Document does not exist!");
+                nameText.text = "Name";
+                emailText.text = "Email";
             }
         });
+    }
+
+    void OnEnable()
+    {
+        currentUser = auth.CurrentUser;
+        if (currentUser != null)
+        {
+            FetchUserDetails();
+        }
+        else
+        {
+            Debug.LogError("No user is logged in.");
+        }
     }
 
     private void UploadCV()
@@ -160,8 +175,17 @@ public class UserDashboardManager : MonoBehaviour
     private void LogoutUser()
     {
         auth.SignOut();
+        ResetDashboard();
         landingCanvas.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    private void ResetDashboard()
+    {
+        nameText.text = "Name";
+        emailText.text = "Email";
+
+        loadingCanvas.SetActive(false);
     }
 
     public void StartFair()
