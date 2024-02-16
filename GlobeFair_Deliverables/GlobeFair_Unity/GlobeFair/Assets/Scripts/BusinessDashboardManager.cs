@@ -2,14 +2,13 @@ using Firebase.Auth;
 using Firebase.Firestore;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections;
 using Firebase.Extensions;
 
 public class BusinessDashboardManager : MonoBehaviour
 {
-    public TextMeshProUGUI businessNameText;
-    public TextMeshProUGUI emailText;
+    public Text businessNameText;
+    public Text emailText;
     public Button startGameButton;
     public Button logoutButton;
     public GameObject landingCanvas;
@@ -42,6 +41,8 @@ public class BusinessDashboardManager : MonoBehaviour
 
     private void FetchBusinessDetails()
     {
+        if (currentUser == null) return;
+
         DocumentReference businessDocRef = db.Collection("bus_users").Document(currentUser.UserId);
         businessDocRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
         {
@@ -54,14 +55,29 @@ public class BusinessDashboardManager : MonoBehaviour
             DocumentSnapshot snapshot = task.Result;
             if (snapshot.Exists)
             {
-                businessNameText.text = snapshot.GetValue<string>("BusinessName");
-                emailText.text = snapshot.GetValue<string>("Email");
+                businessNameText.text = snapshot.GetValue<string>("BusinessName") ?? "Business Name";
+                emailText.text = snapshot.GetValue<string>("Email") ?? "Email";
             }
             else
             {
                 Debug.LogError("Business does not exist!");
+                businessNameText.text = "Business Name";
+                emailText.text = "Email"; 
             }
         });
+    }
+
+    void OnEnable()
+    {
+        currentUser = auth.CurrentUser;
+        if (currentUser != null)
+        {
+            FetchBusinessDetails();
+        }
+        else
+        {
+            Debug.LogError("No user is logged in.");
+        }
     }
 
     private IEnumerator WaitAndLoadScene(string sceneName)
@@ -86,8 +102,15 @@ public class BusinessDashboardManager : MonoBehaviour
     private void LogoutUser()
     {
         auth.SignOut();
+        ResetDashboard();
         landingCanvas.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    private void ResetDashboard()
+    {
+        businessNameText.text = "Business Name";
+        emailText.text = "Email";
     }
 
     void OnDestroy()
