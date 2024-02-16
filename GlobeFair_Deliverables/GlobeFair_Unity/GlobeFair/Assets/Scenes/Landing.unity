@@ -6849,7 +6849,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &670827619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11312,13 +11312,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738281db7591e1e439c175914c2f6384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstNameInputField: {fileID: 0}
-  emailInputField: {fileID: 0}
-  passwordInputField: {fileID: 0}
-  confirmPasswordInputField: {fileID: 0}
-  signupButton: {fileID: 0}
-  feedbackText: {fileID: 0}
-  userDashboardCanvas: {fileID: 0}
+  firstNameInputField: {fileID: 139290766}
+  emailInputField: {fileID: 762670166}
+  passwordInputField: {fileID: 981925539}
+  confirmPasswordInputField: {fileID: 1960664024}
+  signupButton: {fileID: 721331065}
+  feedbackText: {fileID: 348601541}
+  userDashboardCanvas: {fileID: 1382882535}
+  signupCanvas: {fileID: 1091266455}
 --- !u!1 &1097799691
 GameObject:
   m_ObjectHideFlags: 0
@@ -16743,13 +16744,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738281db7591e1e439c175914c2f6384, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstNameInputField: {fileID: 426483899}
-  emailInputField: {fileID: 116855629}
-  passwordInputField: {fileID: 301342316}
-  confirmPasswordInputField: {fileID: 1212790981}
+  firstNameInputField: {fileID: 0}
+  emailInputField: {fileID: 0}
+  passwordInputField: {fileID: 0}
+  confirmPasswordInputField: {fileID: 0}
   signupButton: {fileID: 688748156}
-  feedbackText: {fileID: 2013389433}
+  feedbackText: {fileID: 0}
   userDashboardCanvas: {fileID: 270068677}
+  signupCanvas: {fileID: 0}
 --- !u!1 &1902708625
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,21 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Auth;
-using TMPro;
 using System.Collections.Generic;
 using Firebase.Firestore;
 using Firebase.Extensions;
-using UnityEngine.SceneManagement;
 
 public class SignupManager : MonoBehaviour
 {
-    public TMP_InputField firstNameInputField;
-    public TMP_InputField emailInputField;
-    public TMP_InputField passwordInputField;
-    public TMP_InputField confirmPasswordInputField;
+    public InputField firstNameInputField;
+    public InputField emailInputField;
+    public InputField passwordInputField;
+    public InputField confirmPasswordInputField;
     public Button signupButton;
-    public TextMeshProUGUI feedbackText;
+    public Text feedbackText;
     public GameObject userDashboardCanvas;
+    public GameObject signupCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -50,7 +49,6 @@ public class SignupManager : MonoBehaviour
             return;
         }
 
-        // Firebase Authentication sign-up
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled)
@@ -64,14 +62,13 @@ public class SignupManager : MonoBehaviour
                 return;
             }
 
-            // Firebase user has been created then adding to Firestore
             FirebaseUser newUser = task.Result.User;
             DocumentReference docRef = db.Collection("users").Document(newUser.UserId);
             Dictionary<string, object> newUserMap = new Dictionary<string, object>
-        {
-            { "FirstName", firstName },
-            { "Email", email }
-        };
+            {
+                { "FirstName", firstName },
+                { "Email", email }
+            };
 
             docRef.SetAsync(newUserMap).ContinueWithOnMainThread(firestoreTask =>
             {
@@ -85,19 +82,55 @@ public class SignupManager : MonoBehaviour
                     UpdateFeedback("Failed to add user details to Firestore: " + firestoreTask.Exception?.GetBaseException().Message);
                     return;
                 }
-                UpdateFeedback("Signup successful!");
-
-                userDashboardCanvas.SetActive(true);
-                gameObject.transform.parent.gameObject.SetActive(false);
+                // Sign in the user
+                UpdateFeedback("Signup successful! Logging in...");
+                SignInUser(email, password);
             });
-
         });
     }
 
+    private void SignInUser(string email, string password)
+    {
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            // User signed in successfully, redirect to user dashboard
+            Debug.Log("User signed in successfully");
+            ShowUserDashboard();
+        });
+    }
+
+    private void ShowUserDashboard()
+    {
+        userDashboardCanvas.SetActive(true);
+        signupCanvas.SetActive(false);
+        ResetFieldsAndFeedback();
+    }
+
+    private void ResetFieldsAndFeedback()
+    {
+        // Reset input fields
+        firstNameInputField.text = "";
+        emailInputField.text = "";
+        passwordInputField.text = "";
+        confirmPasswordInputField.text = "";
+
+        // Reset feedback message
+        feedbackText.text = "";
+    }
 
     private void UpdateFeedback(string message)
     {
-        // Method for error messages
         feedbackText.text = message;
     }
 
