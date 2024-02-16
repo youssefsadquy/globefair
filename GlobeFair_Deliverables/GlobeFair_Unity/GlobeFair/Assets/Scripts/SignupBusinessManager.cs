@@ -3,17 +3,19 @@ using Firebase.Firestore;
 using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
 
 public class SignupBusinessManager : MonoBehaviour
 {
-    public TMP_InputField businessNameInputField;
-    public TMP_InputField emailInputField;
-    public TMP_InputField passwordInputField;
-    public TMP_InputField confirmPasswordInputField;
+    public InputField businessNameInputField;
+    public InputField emailInputField;
+    public InputField passwordInputField;
+    public InputField confirmPasswordInputField;
     public Button signupButton;
-    public TextMeshProUGUI feedbackText;
+    public Text feedbackText;
+
+    public GameObject signupCanvas;
+    public GameObject businessDashboardCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -83,9 +85,51 @@ public class SignupBusinessManager : MonoBehaviour
                     UpdateFeedback("Failed to add business user details to Firestore: " + firestoreTask.Exception?.GetBaseException().Message);
                     return;
                 }
-                UpdateFeedback("Business signup successful!");
+                UpdateFeedback("Business signup successful! Logging in...");
+                SignInUser(email, password); // Automatically sign in the user after successful signup
             });
         });
+    }
+
+    private void SignInUser(string email, string password)
+    {
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            // User signed in successfully, redirect to business dashboard
+            Debug.Log("User signed in successfully");
+            ShowBusinessDashboard();
+        });
+    }
+
+    private void ResetFieldsAndFeedback()
+    {
+        // Reset input fields
+        businessNameInputField.text = "";
+        emailInputField.text = "";
+        passwordInputField.text = "";
+        confirmPasswordInputField.text = "";
+
+        // Reset feedback message
+        feedbackText.text = "";
+    }
+
+    private void ShowBusinessDashboard()
+    {
+        signupCanvas.SetActive(false);
+        businessDashboardCanvas.SetActive(true);
+
+        ResetFieldsAndFeedback();
     }
 
     private void UpdateFeedback(string message)
