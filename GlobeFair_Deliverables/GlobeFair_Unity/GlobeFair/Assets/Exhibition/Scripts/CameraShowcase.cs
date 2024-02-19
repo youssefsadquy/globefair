@@ -1,14 +1,17 @@
 using UnityEngine;
+using System.Collections;
+using Cinemachine;
 
 public class CameraShowcase : MonoBehaviour
 {
     public Transform[] waypoints;
+    public GameObject thirdPersonCharacter;
+    public CinemachineVirtualCamera thirdPersonCinemachineCamera;
     public float speed = 0.1f;
     public float rotationSpeed = 5f;
     private int waypointIndex = 0;
     private bool isMoving = true;
     private Vector3 currentVelocity = Vector3.zero;
-    private float turnSpeed = 0.1f;
 
     void Start()
     {
@@ -20,6 +23,9 @@ public class CameraShowcase : MonoBehaviour
                 transform.LookAt(GetLookAtTarget(waypointIndex));
             }
         }
+
+        thirdPersonCharacter.SetActive(false);
+        thirdPersonCinemachineCamera.gameObject.SetActive(false);
     }
 
     void Update()
@@ -50,11 +56,22 @@ public class CameraShowcase : MonoBehaviour
                 waypointIndex++;
                 if (waypointIndex >= waypoints.Length)
                 {
-                    waypointIndex = 0;
                     isMoving = false;
+                    StartCoroutine(TransitionToThirdPersonCharacter());
                 }
             }
         }
+    }
+
+    IEnumerator TransitionToThirdPersonCharacter()
+    {
+        yield return new WaitForSeconds(4f);
+
+        thirdPersonCharacter.SetActive(true);
+        thirdPersonCinemachineCamera.gameObject.SetActive(true);
+        thirdPersonCinemachineCamera.Priority = 11;
+
+        gameObject.SetActive(false);
     }
 
     Transform GetLookAtTarget(int index)
