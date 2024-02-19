@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Threading.Tasks;
-using SFB; 
+using SFB;
 using System.Collections;
 using Firebase.Extensions;
 using System;
+
 
 public class UserDashboardManager : MonoBehaviour
 {
@@ -18,8 +19,7 @@ public class UserDashboardManager : MonoBehaviour
     public Button startGameButton;
     public Button logoutButton;
     public GameObject landingCanvas;
-    public GameObject loadingCanvas;
-    public Slider loadingProgressBar;
+    public GameObject userDashboardCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -84,18 +84,11 @@ public class UserDashboardManager : MonoBehaviour
         {
             FetchUserDetails();
         }
-        else
-        {
-            Debug.LogError("No user is logged in.");
-        }
     }
 
     private void UploadCV()
     {
-        // Open file with SFB
-        var extensions = new[] {
-            new ExtensionFilter("PDF Files", "pdf")
-        };
+        var extensions = new[] { new ExtensionFilter("PDF Files", "pdf") };
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
 
         if (paths.Length > 0)
@@ -106,9 +99,7 @@ public class UserDashboardManager : MonoBehaviour
 
     private IEnumerator UploadPDF(string path)
     {
-        // firebase App
         var storageRef = storage.GetReferenceFromUrl("gs://globefair-46eb2.appspot.com");
-
         var pdfRef = storageRef.Child("cvs/" + currentUser.UserId + ".pdf");
 
         byte[] fileBytes = null;
@@ -116,19 +107,17 @@ public class UserDashboardManager : MonoBehaviour
         {
             fileBytes = File.ReadAllBytes(path);
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             Debug.LogError("Error reading file: " + e.Message);
             yield break;
         }
 
         var uploadTask = pdfRef.PutBytesAsync(fileBytes);
-
         yield return new WaitUntil(() => uploadTask.IsCompleted);
 
         if (uploadTask.IsFaulted)
         {
-            Debug.LogError("Upload failed: " + uploadTask.Exception);
             foreach (var error in uploadTask.Exception.Flatten().InnerExceptions)
             {
                 Debug.LogError(error.Message);
@@ -143,23 +132,15 @@ public class UserDashboardManager : MonoBehaviour
             Debug.Log("File uploaded successfully.");
         }
     }
-
-    private IEnumerator DelayedLoad(string sceneName)
+    public void StartFair()
     {
-        yield return new WaitForSeconds(1f); // 1 second delay
+        LoadingManager.Instance.EnableLoading("Loading the fair...");
 
-        StartCoroutine(LoadGameScene(sceneName));
-    }
+        StartCoroutine(LoadGameScene("GlobeFair"));
 
-    private IEnumerator WaitAndLoadScene(string sceneName)
-    {
-        yield return new WaitForEndOfFrame();
-
-        AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
-
-        while (!asyncLoad.isDone)
+        if (userDashboardCanvas != null)
         {
-            yield return null;
+            userDashboardCanvas.SetActive(false);
         }
     }
 
@@ -170,6 +151,7 @@ public class UserDashboardManager : MonoBehaviour
         {
             yield return null;
         }
+        LoadingManager.Instance.DisableLoading();
     }
 
     private void LogoutUser()
@@ -184,17 +166,6 @@ public class UserDashboardManager : MonoBehaviour
     {
         nameText.text = "Name";
         emailText.text = "Email";
-
-        loadingCanvas.SetActive(false);
-    }
-
-    public void StartFair()
-    {
-        loadingCanvas.SetActive(true);
-
-        Canvas.ForceUpdateCanvases();
-
-        StartCoroutine(WaitAndLoadScene("GlobeFair"));
     }
 
     void OnDestroy()

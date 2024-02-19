@@ -1,47 +1,20 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
-using ReadyPlayerMe;
 
-namespace ReadyPlayerMe.Samples.QuickStart
+public static class TransformExtensions
 {
-    public class LoadingAnimation : MonoBehaviour
+    public static IEnumerator LerpScale(Transform transform, Vector3 targetScale, float duration)
     {
-        [SerializeField] private Transform[] circles;
-        [SerializeField] private float minScaleFactor = 0.1f;
+        Vector3 startScale = transform.localScale;
+        float time = 0;
 
-        private CancellationTokenSource ctx;
-
-        private async void OnEnable()
+        while (time < duration)
         {
-            ctx = new CancellationTokenSource();
-            foreach (var circle in circles)
-            {
-                circle.localScale = Vector3.one * minScaleFactor;
-            }
-
-            while (!ctx.IsCancellationRequested)
-            {
-                foreach (var circle in circles)
-                {
-                    await circle.LerpScale(Vector3.one * 1f, 0.1f, ctx.Token);
-                    try
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(0.1), ctx.Token);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                    _ = circle.LerpScale(Vector3.one * minScaleFactor, 0.2f, ctx.Token);
-                }
-            }
+            transform.localScale = Vector3.Lerp(startScale, targetScale, time / duration);
+            time += Time.deltaTime;
+            yield return null;
         }
 
-        private void OnDisable()
-        {
-            ctx.Cancel();
-        }
+        transform.localScale = targetScale;
     }
 }
