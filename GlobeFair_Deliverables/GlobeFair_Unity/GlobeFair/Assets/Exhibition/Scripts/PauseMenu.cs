@@ -5,6 +5,12 @@ public class PauseMenu : MonoBehaviour
     public GameObject pauseMenuUI;
     private bool isPaused = false;
 
+    void Start()
+    {
+        Time.timeScale = 1f;
+        pauseMenuUI.SetActive(false);
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -36,5 +42,14 @@ public class PauseMenu : MonoBehaviour
         isPaused = true;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void LoadDashboard()
+    {
+        Time.timeScale = 1f;
+
+        PlayerPrefs.SetInt("LoadDashboard", 1);
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Landing");
     }
 }
