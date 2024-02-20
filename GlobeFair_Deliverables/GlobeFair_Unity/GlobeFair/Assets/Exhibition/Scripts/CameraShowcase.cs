@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using Cinemachine;
+using UnityEngine.UI;
 
 public class CameraShowcase : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class CameraShowcase : MonoBehaviour
     private int waypointIndex = 0;
     private bool isMoving = true;
     private Vector3 currentVelocity = Vector3.zero;
+    public GameObject skipPanel;
+    private bool canSkip = true;
 
     void Start()
     {
@@ -26,13 +29,24 @@ public class CameraShowcase : MonoBehaviour
 
         thirdPersonCharacter.SetActive(false);
         thirdPersonCinemachineCamera.gameObject.SetActive(false);
+        
+        if (skipPanel != null)
+        {
+            skipPanel.gameObject.SetActive(true);
+        }
     }
+
 
     void Update()
     {
         if (isMoving && waypoints.Length > 0)
         {
             MoveThroughWaypoints();
+        }
+        if (canSkip && Input.GetKeyDown(KeyCode.S))
+        {
+            StartCoroutine(TransitionToThirdPersonCharacter());
+            canSkip = false;
         }
     }
 
@@ -65,13 +79,18 @@ public class CameraShowcase : MonoBehaviour
 
     IEnumerator TransitionToThirdPersonCharacter()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(2f);
 
         thirdPersonCharacter.SetActive(true);
         thirdPersonCinemachineCamera.gameObject.SetActive(true);
         thirdPersonCinemachineCamera.Priority = 11;
 
         gameObject.SetActive(false);
+
+        if (skipPanel != null)
+        {
+            skipPanel.gameObject.SetActive(false);
+        }
     }
 
     Transform GetLookAtTarget(int index)
