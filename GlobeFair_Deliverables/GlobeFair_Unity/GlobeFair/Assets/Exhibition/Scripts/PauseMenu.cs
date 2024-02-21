@@ -1,18 +1,23 @@
 using UnityEngine;
 using System.Collections;
+using Firebase.Auth;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
     public GameObject saveConfirmationUI;
+    public GameObject exitConfirmationUI;
     private bool isPaused = false;
     public GameStateManager gameStateManager;
+
 
     void Start()
     {
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
         if (saveConfirmationUI != null) saveConfirmationUI.SetActive(false);
+        exitConfirmationUI.SetActive(false);
     }
 
     void Update()
@@ -65,25 +70,45 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+
+
     public void LoadDashboard()
     {
-        // Call the method to save the game state
         gameStateManager.SaveGameState();
-
-        // Hide the pause menu
         pauseMenuUI.SetActive(false);
-
-        // Unpause the game before switching scenes
         Time.timeScale = 1f;
 
-        // Ensure the cursor is unlocked and made invisible before leaving the scene
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        // Set the PlayerPrefs flag to load the dashboard
         PlayerPrefs.SetInt("LoadDashboard", 1);
-
-        // Load the Landing scene
         UnityEngine.SceneManagement.SceneManager.LoadScene("Landing");
+    }
+
+    public void ConfirmSaveAndExit()
+    {
+        gameStateManager.SaveGameState();
+        pauseMenuUI.SetActive(false);
+        exitConfirmationUI.SetActive(true);
+    }
+
+    public void Stay()
+    {
+        exitConfirmationUI.SetActive(false);
+        pauseMenuUI.SetActive(true);
+        Resume();
+        StartCoroutine(SaveConfirmation());
+    }
+
+    public void Leave()
+    {
+        gameStateManager.SaveGameState();
+
+        StartCoroutine(SaveConfirmation());
+
+        FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+        auth.SignOut();
+
+        Application.Quit();
     }
 }
