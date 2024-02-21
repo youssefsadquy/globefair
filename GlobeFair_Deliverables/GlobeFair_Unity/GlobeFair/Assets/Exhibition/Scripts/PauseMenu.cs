@@ -1,8 +1,10 @@
 using UnityEngine;
+using System.Collections;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
+    public GameObject saveConfirmationUI;
     private bool isPaused = false;
     public GameStateManager gameStateManager;
 
@@ -10,6 +12,7 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
+        if (saveConfirmationUI != null) saveConfirmationUI.SetActive(false);
     }
 
     void Update()
@@ -43,6 +46,23 @@ public class PauseMenu : MonoBehaviour
         isPaused = true;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void SaveProgress()
+    {
+        gameStateManager.SaveGameState();
+        Resume();
+        StartCoroutine(SaveConfirmation());
+    }
+
+    private IEnumerator SaveConfirmation()
+    {
+        if (saveConfirmationUI != null)
+        {
+            saveConfirmationUI.SetActive(true);
+            yield return new WaitForSeconds(4);
+            saveConfirmationUI.SetActive(false);
+        }
     }
 
     public void LoadDashboard()
