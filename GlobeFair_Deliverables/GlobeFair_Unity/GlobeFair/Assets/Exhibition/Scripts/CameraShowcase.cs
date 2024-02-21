@@ -16,37 +16,66 @@ public class CameraShowcase : MonoBehaviour
     public GameObject skipPanel;
     private bool canSkip = true;
 
-    void Start()
+    void Awake()
     {
-        if (waypoints.Length > 0)
-        {
-            transform.position = waypoints[waypointIndex].position;
-            if (GetLookAtTarget(waypointIndex) != null)
-            {
-                transform.LookAt(GetLookAtTarget(waypointIndex));
-            }
-        }
-
         thirdPersonCharacter.SetActive(false);
         thirdPersonCinemachineCamera.gameObject.SetActive(false);
-        
+
         if (skipPanel != null)
         {
-            skipPanel.gameObject.SetActive(true);
+            skipPanel.SetActive(true);
         }
     }
 
+    void Start()
+    {
+        if (!GameStateManager.GameStateLoaded)
+        {
+            StartShowcase();
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void StartShowcase()
+    {
+        if (!GameStateManager.GameStateLoaded)
+        {
+            gameObject.SetActive(true);
+            isMoving = true;
+            canSkip = true;
+            waypointIndex = 0;
+            StartCoroutine(ShowcaseRoutine());
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    IEnumerator ShowcaseRoutine()
+    {
+        yield return null;
+
+        if (waypoints.Length > 0)
+        {
+            transform.position = waypoints[0].position;
+            LookAtTarget(0);
+        }
+    }
 
     void Update()
     {
-        if (isMoving && waypoints.Length > 0)
+        if (isMoving)
         {
             MoveThroughWaypoints();
         }
+
         if (canSkip && Input.GetKeyDown(KeyCode.S))
         {
-            StartCoroutine(TransitionToThirdPersonCharacter());
-            canSkip = false;
+            SkipShowcase();
         }
     }
 
@@ -54,51 +83,64 @@ public class CameraShowcase : MonoBehaviour
     {
         if (waypointIndex < waypoints.Length)
         {
-            Transform targetWaypoint = waypoints[waypointIndex];
-            Vector3 targetPosition = targetWaypoint.position;
-
+            Vector3 targetPosition = waypoints[waypointIndex].position;
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, speed);
-
-            if (GetLookAtTarget(waypointIndex) != null)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(GetLookAtTarget(waypointIndex).position - transform.position);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
+            LookAtTarget(waypointIndex);
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
                 waypointIndex++;
-                if (waypointIndex >= waypoints.Length)
+                if (waypointIndex == waypoints.Length)
                 {
-                    isMoving = false;
-                    StartCoroutine(TransitionToThirdPersonCharacter());
+                    FinishShowcase();
                 }
             }
         }
     }
 
-    IEnumerator TransitionToThirdPersonCharacter()
+    void SkipShowcase()
     {
-        yield return new WaitForSeconds(2f);
+        FinishShowcase();
+    }
+
+    void FinishShowcase()
+    {
+        isMoving = false;
+        canSkip = false;
 
         thirdPersonCharacter.SetActive(true);
         thirdPersonCinemachineCamera.gameObject.SetActive(true);
         thirdPersonCinemachineCamera.Priority = 11;
 
-        gameObject.SetActive(false);
-
         if (skipPanel != null)
         {
-            skipPanel.gameObject.SetActive(false);
+            skipPanel.SetActive(false);
         }
+
+        gameObject.SetActive(false); // Disable the showcase
+    }
+
+    void LookAtTarget(int index)
+    {
+        if (waypoints.Length > index && waypoints[index].childCount > 0)
+        {
+            Transform target = waypoints[index].GetChild(0);
+            transform.LookAt(target);
+        }
+    }
+
+    public void DeactivateShowcase()
+    {
+        StopAllCoroutines();
+        isMoving = false;
+        canSkip = false;
+        gameObject.SetActive(false);
+        thirdPersonCinemachineCamera.gameObject.SetActive(true);
+        thirdPersonCharacter.SetActive(true);
     }
 
     Transform GetLookAtTarget(int index)
     {
-        if (waypoints[index].childCount > 0)
-        {
-            return waypoints[index].GetChild(0);
-        }
-        return null;
+        return waypoints.Length > index && waypoints[index].childCount > 0 ? waypoints[index].GetChild(0) : null;
     }
 }
