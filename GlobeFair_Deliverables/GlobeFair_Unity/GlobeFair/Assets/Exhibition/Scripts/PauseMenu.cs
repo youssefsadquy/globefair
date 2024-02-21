@@ -18,7 +18,19 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         if (saveConfirmationUI != null) saveConfirmationUI.SetActive(false);
         exitConfirmationUI.SetActive(false);
+        StartAutoSave();
     }
+
+    public void Resume()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        isPaused = false;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        StartAutoSave();
+    }
+
 
     void Update()
     {
@@ -33,15 +45,6 @@ public class PauseMenu : MonoBehaviour
                 Pause();
             }
         }
-    }
-
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-        isPaused = false;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Pause()
@@ -111,4 +114,20 @@ public class PauseMenu : MonoBehaviour
 
         Application.Quit();
     }
+
+    private void StartAutoSave()
+    {
+        StartCoroutine(AutoSaveRoutine());
+    }
+
+    private IEnumerator AutoSaveRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(60);
+            gameStateManager.SaveGameState();
+            StartCoroutine(SaveConfirmation());
+        }
+    }
+
 }
