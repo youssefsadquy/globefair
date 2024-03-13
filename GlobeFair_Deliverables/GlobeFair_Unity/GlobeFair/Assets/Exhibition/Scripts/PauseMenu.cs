@@ -124,7 +124,7 @@ public class PauseMenu : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(60);
+            yield return new WaitForSeconds(240);
             gameStateManager.SaveGameState();
             StartCoroutine(SaveConfirmation());
         }

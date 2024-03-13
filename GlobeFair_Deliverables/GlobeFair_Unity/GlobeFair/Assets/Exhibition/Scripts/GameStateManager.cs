@@ -59,7 +59,7 @@ public class GameStateManager : MonoBehaviour
     {
         if (auth.CurrentUser == null)
         {
-            // Reset GameStateLoaded flag
+            // Reset flag
             GameStateLoaded = false;
             cameraShowcase.StartShowcase();
             return;

@@ -12,7 +12,7 @@ public class BusinessDashboardManager : MonoBehaviour
     public Button startGameButton;
     public Button logoutButton;
     public GameObject landingCanvas;
-    public GameObject loadingCanvas;
+    public GameObject businessDashboardCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -80,23 +80,26 @@ public class BusinessDashboardManager : MonoBehaviour
         }
     }
 
-    private IEnumerator WaitAndLoadScene(string sceneName)
+    public void StartFair()
     {
-        yield return new WaitForEndOfFrame();
+        LoadingManager.Instance.EnableLoading("Loading the fair...");
 
+        StartCoroutine(LoadGameScene("GlobeFair"));
+
+        if (businessDashboardCanvas != null)
+        {
+            businessDashboardCanvas.SetActive(false);
+        }
+    }
+
+    private IEnumerator LoadGameScene(string sceneName)
+    {
         AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
-
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
-    }
-
-    public void StartFair()
-    {
-        loadingCanvas.SetActive(true);
-        Canvas.ForceUpdateCanvases();
-        StartCoroutine(WaitAndLoadScene("GlobeFair"));
+        LoadingManager.Instance.DisableLoading();
     }
 
     private void LogoutUser()

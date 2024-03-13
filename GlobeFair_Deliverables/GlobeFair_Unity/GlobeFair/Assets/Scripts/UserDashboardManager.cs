@@ -132,6 +132,7 @@ public class UserDashboardManager : MonoBehaviour
             Debug.Log("File uploaded successfully.");
         }
     }
+
     public void StartFair()
     {
         LoadingManager.Instance.EnableLoading("Loading the fair...");

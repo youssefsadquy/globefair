@@ -86,7 +86,7 @@ public class SignupBusinessManager : MonoBehaviour
                     return;
                 }
                 UpdateFeedback("Business signup successful! Logging in...");
-                SignInUser(email, password); // Automatically sign in the user after successful signup
+                SignInUser(email, password);
             });
         });
     }
