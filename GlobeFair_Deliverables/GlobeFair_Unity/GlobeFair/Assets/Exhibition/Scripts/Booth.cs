@@ -1,12 +1,17 @@
 using Firebase.Firestore;
 using UnityEngine;
 using Firebase.Extensions;
+using System.Collections;
+using UnityEngine.Networking;
 
 [FirestoreData]
 public class BoothData
 {
     [FirestoreProperty]
     public bool Taken { get; set; }
+
+    [FirestoreProperty]
+    public string LogoUrl { get; set; } // Added property for logo URL
 }
 
 public class Booth : MonoBehaviour
@@ -17,7 +22,7 @@ public class Booth : MonoBehaviour
     void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
-        CreateOrUpdateBoothDocument();
+        FetchBoothDataAndApplyLogo();
     }
 
     private void CreateOrUpdateBoothDocument()
@@ -52,6 +57,86 @@ public class Booth : MonoBehaviour
             }
         });
     }
+
+    private void FetchBoothDataAndApplyLogo()
+    {
+        DocumentReference boothDocRef = db.Collection("booths").Document(boothId);
+        boothDocRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError($"Error fetching booth data for booth {boothId}: " + task.Exception);
+                return;
+            }
+            DocumentSnapshot snapshot = task.Result;
+            if (snapshot.Exists)
+            {
+                BoothData boothData = snapshot.ConvertTo<BoothData>();
+                if (!string.IsNullOrEmpty(boothData.LogoUrl))
+                {
+                    StartCoroutine(DownloadAndApplyLogo(boothData.LogoUrl));
+                }
+                else
+                {
+                    Debug.Log($"No logo URL for booth {boothId}");
+                }
+            }
+            else
+            {
+                Debug.Log($"Booth document for booth {boothId} does not exist.");
+            }
+        });
+    }
+
+    IEnumerator DownloadAndApplyLogo(string logoUrl)
+    {
+        Debug.Log($"Fetching logo from URL: {logoUrl} for booth {boothId}");
+
+        UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(logoUrl);
+        yield return uwr.SendWebRequest();
+
+        if (uwr.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+            Debug.Log($"Logo downloaded successfully for booth {boothId}");
+
+            // Extract the booth number from the boothId string
+            string boothNumber = boothId.Split('_')[1];
+            string logoObjectName = $"Stand_{boothNumber}_Logo_{boothNumber}";
+            GameObject stand = GameObject.Find(boothId);
+
+            if (stand != null)
+            {
+                Transform logoTransform = stand.transform.Find(logoObjectName);
+                if (logoTransform != null)
+                {
+                    Renderer logoRenderer = logoTransform.GetComponent<Renderer>();
+                    if (logoRenderer != null)
+                    {
+                        Debug.Log($"Renderer found for booth {boothId}, applying texture");
+                        logoRenderer.material.mainTexture = texture;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Renderer component not found for booth {boothId}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Logo object {logoObjectName} not found in booth {boothId}");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Stand object {boothId} not found in the scene.");
+            }
+        }
+        else
+        {
+            Debug.LogError($"Error downloading logo texture: {uwr.error}");
+        }
+    }
+
 
     public void SetBoothAvailability(bool isAvailable)
     {

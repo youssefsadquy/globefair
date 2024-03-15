@@ -3,6 +3,7 @@ using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Extensions;
+using System.Collections.Generic;
 
 public class StandSelectionManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class StandSelectionManager : MonoBehaviour
     public Transform gridContent;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    private string previouslySelectedStandId = null;
 
     void Start()
     {
@@ -32,7 +34,6 @@ public class StandSelectionManager : MonoBehaviour
             {
                 GameObject standButton = Instantiate(standButtonPrefab, gridContent);
 
-                // Load the stand image from the Resources folder
                 string imagePath = "Stands/" + document.Id;
                 Sprite standSprite = Resources.Load<Sprite>(imagePath);
                 if (standSprite != null)
@@ -59,8 +60,34 @@ public class StandSelectionManager : MonoBehaviour
             return;
         }
 
+        if (!string.IsNullOrEmpty(previouslySelectedStandId) && previouslySelectedStandId != standId)
+        {
+            var previousStandRef = db.Collection("booths").Document(previouslySelectedStandId);
+            var updateDataPrevious = new Dictionary<string, object>
+        {
+            { "Taken", false },
+            { "UserId", FieldValue.Delete }
+        };
+            previousStandRef.UpdateAsync(updateDataPrevious).ContinueWithOnMainThread(previousUpdateTask =>
+            {
+                if (previousUpdateTask.IsFaulted || previousUpdateTask.IsCanceled)
+                {
+                    Debug.LogError("Error marking previous stand as taken: " + previousUpdateTask.Exception);
+                }
+                else
+                {
+                    Debug.Log("Previous stand updated successfully.");
+                }
+            });
+        }
+
         DocumentReference standRef = db.Collection("booths").Document(standId);
-        standRef.UpdateAsync("Taken", true).ContinueWithOnMainThread(updateTask =>
+        var updateDataNew = new Dictionary<string, object>
+    {
+        { "Taken", true },
+        { "UserId", currentUser.UserId }
+    };
+        standRef.UpdateAsync(updateDataNew).ContinueWithOnMainThread(updateTask =>
         {
             if (updateTask.IsFaulted || updateTask.IsCanceled)
             {
@@ -68,17 +95,9 @@ public class StandSelectionManager : MonoBehaviour
                 return;
             }
 
-            // Assign the stand to the current user in another field
-            standRef.UpdateAsync("UserId", currentUser.UserId).ContinueWithOnMainThread(userAssignTask =>
-            {
-                if (userAssignTask.IsFaulted || userAssignTask.IsCanceled)
-                {
-                    Debug.LogError("Error assigning stand to user: " + userAssignTask.Exception);
-                    return;
-                }
-
-                Debug.Log("Stand selected and marked as taken: " + standId);
-            });
+            Debug.Log("Stand selected and marked as taken: " + standId);
+            previouslySelectedStandId = standId;
         });
     }
+
 }
