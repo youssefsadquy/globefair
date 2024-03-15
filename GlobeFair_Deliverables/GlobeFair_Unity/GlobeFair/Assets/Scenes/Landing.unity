@@ -1037,7 +1037,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start Fair
+  m_Text: Create Business Positions
 --- !u!222 &82185474
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2170,7 +2170,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1042646613}
   m_HandleRect: {fileID: 1042646612}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -15556,7 +15556,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Settings
+  m_Text: Upload Q&A
 --- !u!222 &1516922216
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22136,7 +22136,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: View Candidates
+  m_Text: Upload Business Information
 --- !u!222 &2094714804
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - CinemachineTarget
+  - Stand_1
+  - Stand_1_Logo_1
   layers:
   - Default
   - TransparentFX

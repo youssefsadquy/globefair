@@ -11,7 +11,7 @@ public class BoothData
     public bool Taken { get; set; }
 
     [FirestoreProperty]
-    public string LogoUrl { get; set; } // Added property for logo URL
+    public string LogoUrl { get; set; }
 }
 
 public class Booth : MonoBehaviour
@@ -100,35 +100,28 @@ public class Booth : MonoBehaviour
             Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
             Debug.Log($"Logo downloaded successfully for booth {boothId}");
 
-            // Extract the booth number from the boothId string
-            string boothNumber = boothId.Split('_')[1];
-            string logoObjectName = $"Stand_{boothNumber}_Logo_{boothNumber}";
-            GameObject stand = GameObject.Find(boothId);
+            GameObject stand = GameObject.FindWithTag(boothId);
+            GameObject logoObject = GameObject.FindWithTag($"{boothId}_Logo_1");
 
-            if (stand != null)
+            if (stand != null && logoObject != null)
             {
-                Transform logoTransform = stand.transform.Find(logoObjectName);
-                if (logoTransform != null)
+                Renderer logoRenderer = logoObject.GetComponent<Renderer>();
+                if (logoRenderer != null)
                 {
-                    Renderer logoRenderer = logoTransform.GetComponent<Renderer>();
-                    if (logoRenderer != null)
-                    {
-                        Debug.Log($"Renderer found for booth {boothId}, applying texture");
-                        logoRenderer.material.mainTexture = texture;
-                    }
-                    else
-                    {
-                        Debug.LogError($"Renderer component not found for booth {boothId}");
-                    }
+                    Debug.Log($"Renderer found for booth {boothId}, applying texture");
+                    logoRenderer.material.mainTexture = texture;
                 }
                 else
                 {
-                    Debug.LogError($"Logo object {logoObjectName} not found in booth {boothId}");
+                    Debug.LogError($"Renderer component not found for logo object with tag {logoObject.tag}");
                 }
             }
             else
             {
-                Debug.LogError($"Stand object {boothId} not found in the scene.");
+                if (stand == null)
+                    Debug.LogError($"Stand object with tag {boothId} not found in the scene.");
+                if (logoObject == null)
+                    Debug.LogError($"Logo object with tag {boothId}_Logo_1 not found in the scene.");
             }
         }
         else
@@ -136,6 +129,7 @@ public class Booth : MonoBehaviour
             Debug.LogError($"Error downloading logo texture: {uwr.error}");
         }
     }
+
 
 
     public void SetBoothAvailability(bool isAvailable)
