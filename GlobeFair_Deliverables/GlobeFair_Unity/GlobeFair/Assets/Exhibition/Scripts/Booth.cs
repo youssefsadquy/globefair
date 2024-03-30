@@ -115,6 +115,34 @@ public class Booth : MonoBehaviour
                 {
                     Debug.LogError($"Renderer component not found for logo object with tag {logoObject.tag}");
                 }
+                GameObject logoObject2 = GameObject.FindWithTag($"{boothId}_Logo_2");
+                if (logoObject2 != null)
+                {
+                    Renderer logoRenderer2 = logoObject2.GetComponent<Renderer>();
+                    if (logoRenderer2 != null)
+                    {
+                        Debug.Log($"Renderer found for booth {boothId} logo 2, applying texture");
+                        logoRenderer2.material.mainTexture = texture;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Renderer component not found for logo object 2 with tag {logoObject2.tag}");
+                    }
+                }
+                GameObject logoObject3 = GameObject.FindWithTag($"{boothId}_Logo_3");
+                if (logoObject3 != null)
+                {
+                    Renderer logoRenderer3 = logoObject3.GetComponent<Renderer>();
+                    if (logoRenderer3 != null)
+                    {
+                        Debug.Log($"Renderer found for booth {boothId} logo 3, applying texture");
+                        logoRenderer3.material.mainTexture = texture;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Renderer component not found for logo object 3 with tag {logoObject2.tag}");
+                    }
+                }
             }
             else
             {

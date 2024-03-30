@@ -7,6 +7,67 @@ TagManager:
   - CinemachineTarget
   - Stand_1
   - Stand_1_Logo_1
+  - Stand_2
+  - Stand_3
+  - Stand_4
+  - Stand_5
+  - Stand_6
+  - Stand_7
+  - Stand_8
+  - Stand_9
+  - Stand_10
+  - Stand_11
+  - Stand_12
+  - Stand_13
+  - Stand_14
+  - Stand_15
+  - Stand_16
+  - Stand_17
+  - Stand_18
+  - Stand_19
+  - Stand_20
+  - Stand_21
+  - Stand_2_Logo_1
+  - Stand_3_Logo_1
+  - Stand_4_Logo_1
+  - Stand_5_Logo_1
+  - Stand_6_Logo_1
+  - Stand_7_Logo_1
+  - Stand_8_Logo_1
+  - Stand_9_Logo_1
+  - Stand_10_Logo_1
+  - Stand_11_Logo_1
+  - Stand_12_Logo_1
+  - Stand_13_Logo_1
+  - Stand_15_Logo_1
+  - Stand_16_Logo_1
+  - Stand_17_Logo_1
+  - Stand_18_Logo_1
+  - Stand_19_Logo_1
+  - Stand_20_Logo_1
+  - Stand_21_Logo_1
+  - Stand_2_Logo_2
+  - Stand_3_Logo_2
+  - Stand_4_Logo_2
+  - Stand_4_Logo_3
+  - Stand_8_Logo_2
+  - Stand_8_Logo_3
+  - Stand_10_Logo_2
+  - Stand_10_Logo_3
+  - Stand_11_Logo_2
+  - Stand_13_Logo_2
+  - Stand_15_Logo_2
+  - Stand_15_Logo_3
+  - Stand_16_Logo_2
+  - Stand_16_Logo_3
+  - Stand_17_Logo_2
+  - Stand_17_Logo_3
+  - Stand_18_Logo_2
+  - Stand_18_Logo_3
+  - Stand_19_Logo_2
+  - Stand_19_Logo_3
+  - Stand_14_Logo_1
+  - Stand_2_Monitor_1
   layers:
   - Default
   - TransparentFX
