@@ -10,7 +10,7 @@ public class PauseMenu : MonoBehaviour
     public GameObject exitConfirmationUI;
     private bool isPaused = false;
     public GameStateManager gameStateManager;
-
+    [SerializeField] private GameObject standInfoCanvas;
 
     void Start()
     {
@@ -36,6 +36,11 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (standInfoCanvas != null && standInfoCanvas.activeSelf)
+            {
+                return;
+            }
+
             if (isPaused)
             {
                 Resume();
@@ -46,6 +51,8 @@ public class PauseMenu : MonoBehaviour
             }
         }
     }
+
+
 
     void Pause()
     {
