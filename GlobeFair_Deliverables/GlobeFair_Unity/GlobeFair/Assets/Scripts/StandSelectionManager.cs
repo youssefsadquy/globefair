@@ -12,6 +12,7 @@ public class StandSelectionManager : MonoBehaviour
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private string previouslySelectedStandId = null;
+    public Image boothDisplayImage;
 
     void Start()
     {
@@ -20,14 +21,12 @@ public class StandSelectionManager : MonoBehaviour
 
         if (auth.CurrentUser != null)
         {
-            LoadSelectedStandId();
+            InitializeOrRefreshCanvas();
         }
         else
         {
             Debug.LogError("No user is logged in.");
         }
-
-        PopulateGridWithStands();
     }
 
     void PopulateGridWithStands()
@@ -78,6 +77,18 @@ public class StandSelectionManager : MonoBehaviour
             {
                 previouslySelectedStandId = snapshot.GetValue<string>("selectedStandId");
                 Debug.Log("Loaded previously selected stand ID: " + previouslySelectedStandId);
+                UpdateSelectedBoothImage(previouslySelectedStandId);
+
+                string spriteName = previouslySelectedStandId;
+                Sprite standSprite = Resources.Load<Sprite>("Stands/" + spriteName);
+                if (standSprite != null)
+                {
+                    boothDisplayImage.sprite = standSprite;
+                }
+                else
+                {
+                    Debug.LogWarning("Stand sprite not found for: " + spriteName);
+                }
             }
             else
             {
@@ -108,11 +119,9 @@ public class StandSelectionManager : MonoBehaviour
                 if (previousUpdateTask.IsFaulted || previousUpdateTask.IsCanceled)
                 {
                     Debug.LogError("Error marking previous stand as not taken: " + previousUpdateTask.Exception);
+                    return;
                 }
-                else
-                {
-                    Debug.Log("Previous stand updated successfully.");
-                }
+                Debug.Log("Previous stand updated successfully.");
             });
         }
 
@@ -127,28 +136,65 @@ public class StandSelectionManager : MonoBehaviour
             if (newStandUpdateTask.IsFaulted || newStandUpdateTask.IsCanceled)
             {
                 Debug.LogError("Error marking new stand as taken: " + newStandUpdateTask.Exception);
+                return;
             }
-            else
-            {
-                Debug.Log("New stand selected and marked as taken: " + standId);
+            Debug.Log("New stand selected and marked as taken: " + standId);
 
-                DocumentReference userDocRef = db.Collection("bus_users").Document(currentUser.UserId);
-                userDocRef.UpdateAsync("selectedStandId", standId).ContinueWithOnMainThread(userUpdateTask =>
+            DocumentReference userDocRef = db.Collection("bus_users").Document(currentUser.UserId);
+            userDocRef.UpdateAsync("selectedStandId", standId).ContinueWithOnMainThread(userUpdateTask =>
+            {
+                if (userUpdateTask.IsFaulted || userUpdateTask.IsCanceled)
                 {
-                    if (userUpdateTask.IsFaulted || userUpdateTask.IsCanceled)
-                    {
-                        Debug.LogError("Error updating user's selected stand ID: " + userUpdateTask.Exception);
-                    }
-                    else
-                    {
-                        Debug.Log("User's selected stand ID updated in Firestore.");
-                        previouslySelectedStandId = standId;
-                    }
-                });
-            }
+                    Debug.LogError("Error updating user's selected stand ID: " + userUpdateTask.Exception);
+                }
+                else
+                {
+                    Debug.Log("User's selected stand ID updated in Firestore.");
+                    previouslySelectedStandId = standId;
+                    InitializeOrRefreshCanvas();
+                }
+            });
         });
     }
 
+    private void UpdateSelectedBoothImage(string standId)
+    {
+        string spriteName = standId;
+        Sprite standSprite = Resources.Load<Sprite>("Stands/" + spriteName);
+        if (standSprite != null)
+        {
+            boothDisplayImage.sprite = standSprite;
+        }
+        else
+        {
+            Debug.LogWarning("Stand sprite not found for: " + spriteName);
+        }
+    }
 
+    public void InitializeOrRefreshCanvas()
+    {
+        if (auth.CurrentUser == null)
+        {
+            Debug.LogError("No user is logged in.");
+            return;
+        }
 
+        ClearGrid();
+        LoadSelectedStandId();
+        PopulateGridWithStands();
+    }
+
+    public void RefreshAfterStandSelection(string standId)
+    {
+        previouslySelectedStandId = standId;
+        InitializeOrRefreshCanvas();
+    }
+
+    private void ClearGrid()
+    {
+        foreach (Transform child in gridContent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
 }
