@@ -150,8 +150,8 @@ public class LogoUploadManager : MonoBehaviour
 
     void SaveLogoUrlToFirestore(string logoUrl)
     {
-        var boothRef = db.Collection("booths").Document(userBoothId);
-        boothRef.UpdateAsync("LogoUrl", logoUrl).ContinueWithOnMainThread(task =>
+        var busUserRef = db.Collection("bus_users").Document(currentUser.UserId);
+        busUserRef.UpdateAsync("logo", logoUrl).ContinueWithOnMainThread(task =>
         {
             if (task.IsFaulted || task.IsCanceled)
             {
@@ -159,11 +159,9 @@ public class LogoUploadManager : MonoBehaviour
                 return;
             }
 
-            Debug.Log("Firestore updated with logo URL for booth: " + userBoothId);
+            Debug.Log("Firestore updated with logo URL for business user: " + currentUser.UserId);
         });
     }
-
-
 
     void ApplyLogoToBoothMaterial(string logoUrl)
     {

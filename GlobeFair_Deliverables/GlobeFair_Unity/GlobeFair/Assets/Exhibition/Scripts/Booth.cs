@@ -68,17 +68,42 @@ public class Booth : MonoBehaviour
                 Debug.LogError($"Error fetching booth data for booth {boothId}: " + task.Exception);
                 return;
             }
-            DocumentSnapshot snapshot = task.Result;
-            if (snapshot.Exists)
+            DocumentSnapshot boothSnapshot = task.Result;
+            if (boothSnapshot.Exists)
             {
-                BoothData boothData = snapshot.ConvertTo<BoothData>();
-                if (!string.IsNullOrEmpty(boothData.LogoUrl))
+                string boothUserId = boothSnapshot.GetValue<string>("UserId");
+                if (!string.IsNullOrEmpty(boothUserId))
                 {
-                    StartCoroutine(DownloadAndApplyLogo(boothData.LogoUrl));
+                    DocumentReference busUserRef = db.Collection("bus_users").Document(boothUserId);
+                    busUserRef.GetSnapshotAsync().ContinueWithOnMainThread(busUserTask =>
+                    {
+                        if (busUserTask.IsFaulted || busUserTask.IsCanceled)
+                        {
+                            Debug.LogError($"Error fetching business user data for user {boothUserId}: " + busUserTask.Exception);
+                            return;
+                        }
+                        DocumentSnapshot busUserSnapshot = busUserTask.Result;
+                        if (busUserSnapshot.Exists)
+                        {
+                            string logoUrl = busUserSnapshot.GetValue<string>("logo");
+                            if (!string.IsNullOrEmpty(logoUrl))
+                            {
+                                StartCoroutine(DownloadAndApplyLogo(logoUrl));
+                            }
+                            else
+                            {
+                                Debug.Log($"No logo URL for business user {boothUserId}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log($"Business user document for user {boothUserId} does not exist.");
+                        }
+                    });
                 }
                 else
                 {
-                    Debug.Log($"No logo URL for booth {boothId}");
+                    Debug.Log($"No UserId associated with booth {boothId}");
                 }
             }
             else
@@ -87,6 +112,7 @@ public class Booth : MonoBehaviour
             }
         });
     }
+
 
     IEnumerator DownloadAndApplyLogo(string logoUrl)
     {

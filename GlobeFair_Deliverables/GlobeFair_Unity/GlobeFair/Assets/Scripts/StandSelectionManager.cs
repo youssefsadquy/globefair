@@ -100,7 +100,6 @@ public class StandSelectionManager : MonoBehaviour
             DocumentReference previousStandRef = db.Collection("booths").Document(previouslySelectedStandId);
             var updateDataPrevious = new Dictionary<string, object>
         {
-            { "LogoUrl", FieldValue.Delete },
             { "Taken", false },
             { "UserId", FieldValue.Delete }
         };
@@ -149,6 +148,7 @@ public class StandSelectionManager : MonoBehaviour
             }
         });
     }
+
 
 
 }
