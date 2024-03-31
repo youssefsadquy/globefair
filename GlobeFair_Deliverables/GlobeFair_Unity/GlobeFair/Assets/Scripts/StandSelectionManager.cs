@@ -13,11 +13,13 @@ public class StandSelectionManager : MonoBehaviour
     private FirebaseAuth auth;
     private string previouslySelectedStandId = null;
     public Image boothDisplayImage;
+    private Sprite defaultBoothImage;
 
     void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
         auth = FirebaseAuth.DefaultInstance;
+        defaultBoothImage = boothDisplayImage.sprite;
 
         if (auth.CurrentUser != null)
         {
@@ -156,6 +158,51 @@ public class StandSelectionManager : MonoBehaviour
             });
         });
     }
+
+    public void UnselectStand()
+    {
+        var currentUser = auth.CurrentUser;
+        if (currentUser == null)
+        {
+            Debug.LogError("No user is logged in.");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(previouslySelectedStandId))
+        {
+            DocumentReference standRef = db.Collection("booths").Document(previouslySelectedStandId);
+            var updateData = new Dictionary<string, object>
+        {
+            { "Taken", false },
+            { "UserId", FieldValue.Delete }
+        };
+            standRef.UpdateAsync(updateData).ContinueWithOnMainThread(standUpdateTask =>
+            {
+                if (standUpdateTask.IsFaulted || standUpdateTask.IsCanceled)
+                {
+                    Debug.LogError("Error marking stand as not taken: " + standUpdateTask.Exception);
+                    return;
+                }
+                Debug.Log("Stand marked as not taken successfully.");
+
+                DocumentReference userDocRef = db.Collection("bus_users").Document(currentUser.UserId);
+                userDocRef.UpdateAsync("selectedStandId", FieldValue.Delete).ContinueWithOnMainThread(userUpdateTask =>
+                {
+                    if (userUpdateTask.IsFaulted || userUpdateTask.IsCanceled)
+                    {
+                        Debug.LogError("Error removing user's selected stand ID: " + userUpdateTask.Exception);
+                        return;
+                    }
+                    Debug.Log("User's selected stand ID removed from Firestore.");
+                    previouslySelectedStandId = null;
+
+                    boothDisplayImage.sprite = defaultBoothImage;
+                    InitializeOrRefreshCanvas();
+                });
+            });
+        }
+    }
+
 
     private void UpdateSelectedBoothImage(string standId)
     {
