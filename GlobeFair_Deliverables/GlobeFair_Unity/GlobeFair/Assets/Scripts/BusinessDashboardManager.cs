@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using Firebase.Extensions;
+using System;
+
 
 public class BusinessDashboardManager : MonoBehaviour
 {
@@ -23,6 +25,8 @@ public class BusinessDashboardManager : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
         currentUser = auth.CurrentUser;
+
+        auth.StateChanged += AuthStateChanged;
     }
 
     void Start()
@@ -36,6 +40,25 @@ public class BusinessDashboardManager : MonoBehaviour
         else
         {
             Debug.LogError("No business user is logged in.");
+        }
+    }
+
+    private void AuthStateChanged(object sender, EventArgs eventArgs)
+    {
+        if (auth.CurrentUser != currentUser)
+        {
+            Debug.Log("Auth state changed, user has either signed in or out");
+            currentUser = auth.CurrentUser;
+
+            if (currentUser != null)
+            {
+                FetchBusinessDetails();
+                RefreshUI();
+            }
+            else
+            {
+                ResetDashboard();
+            }
         }
     }
 
@@ -73,6 +96,7 @@ public class BusinessDashboardManager : MonoBehaviour
         if (currentUser != null)
         {
             FetchBusinessDetails();
+            RefreshUI();
         }
         else
         {
@@ -106,9 +130,46 @@ public class BusinessDashboardManager : MonoBehaviour
     {
         auth.SignOut();
         ResetDashboard();
+
+        if (businessDashboardCanvas != null)
+        {
+            businessDashboardCanvas.SetActive(false);
+        }
+
+        GameObject businessCustomisationCanvas = GameObject.Find("BusinessCustomisation");
+        if (businessCustomisationCanvas != null)
+        {
+            businessCustomisationCanvas.SetActive(false);
+        }
+
         landingCanvas.SetActive(true);
-        gameObject.SetActive(false);
     }
+
+    private void RefreshUI()
+    {
+        if (auth.CurrentUser == null)
+        {
+            Debug.LogError("No user is logged in.");
+            return;
+        }
+
+        // Fetch and display the current user's business details again
+        FetchBusinessDetails();
+
+        // Ensure all related canvases are updated and active
+        if (businessDashboardCanvas != null)
+        {
+            businessDashboardCanvas.SetActive(true);
+        }
+
+        GameObject businessCustomisationCanvas = GameObject.Find("BusinessCustomisation");
+        if (businessCustomisationCanvas != null)
+        {
+            businessCustomisationCanvas.SetActive(true);
+        }
+    }
+
+
 
     private void ResetDashboard()
     {
@@ -118,6 +179,7 @@ public class BusinessDashboardManager : MonoBehaviour
 
     void OnDestroy()
     {
+        auth.StateChanged -= AuthStateChanged;
         startGameButton.onClick.RemoveListener(() => StartFair());
     }
 }

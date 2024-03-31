@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Firebase.Extensions;
 using System.Collections.Generic;
+using System;
 
 public class StandSelectionManager : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class StandSelectionManager : MonoBehaviour
     private string previouslySelectedStandId = null;
     public Image boothDisplayImage;
     private Sprite defaultBoothImage;
+    private FirebaseUser currentUser;
+    private bool isGridInitialized = false;
 
     void Start()
     {
@@ -29,6 +32,15 @@ public class StandSelectionManager : MonoBehaviour
         {
             Debug.LogError("No user is logged in.");
         }
+    }
+
+    void Awake()
+    {
+        db = FirebaseFirestore.DefaultInstance;
+        auth = FirebaseAuth.DefaultInstance;
+        defaultBoothImage = boothDisplayImage.sprite;
+
+        auth.StateChanged += AuthStateChanged;
     }
 
     void PopulateGridWithStands()
@@ -101,6 +113,7 @@ public class StandSelectionManager : MonoBehaviour
 
     void SelectStand(string standId)
     {
+        isGridInitialized = false;
         var currentUser = auth.CurrentUser;
         if (currentUser == null)
         {
@@ -161,6 +174,7 @@ public class StandSelectionManager : MonoBehaviour
 
     public void UnselectStand()
     {
+        isGridInitialized = false;
         var currentUser = auth.CurrentUser;
         if (currentUser == null)
         {
@@ -220,6 +234,10 @@ public class StandSelectionManager : MonoBehaviour
 
     public void InitializeOrRefreshCanvas()
     {
+        if (isGridInitialized)
+        {
+            return;
+        }
         if (auth.CurrentUser == null)
         {
             Debug.LogError("No user is logged in.");
@@ -229,6 +247,7 @@ public class StandSelectionManager : MonoBehaviour
         ClearGrid();
         LoadSelectedStandId();
         PopulateGridWithStands();
+        isGridInitialized = true;
     }
 
     public void RefreshAfterStandSelection(string standId)
@@ -243,5 +262,32 @@ public class StandSelectionManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    private void AuthStateChanged(object sender, EventArgs eventArgs)
+    {
+        if (auth.CurrentUser != currentUser)
+        {
+            currentUser = auth.CurrentUser;
+
+            if (currentUser != null)
+            {
+                isGridInitialized = false;
+                InitializeOrRefreshCanvas();
+            }
+            else
+            {
+                previouslySelectedStandId = null;
+                boothDisplayImage.sprite = defaultBoothImage;
+                ClearGrid();
+                isGridInitialized = false;
+            }
+        }
+    }
+
+
+    void OnDestroy()
+    {
+        auth.StateChanged -= AuthStateChanged;
     }
 }
