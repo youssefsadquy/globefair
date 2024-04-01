@@ -12,6 +12,8 @@ using Firebase.Extensions;
 using System.Collections;
 using UnityEngine.Networking;
 using SFB;
+using System.Collections.Generic;
+
 
 public class LogoUploadManager : MonoBehaviour
 {
@@ -22,6 +24,7 @@ public class LogoUploadManager : MonoBehaviour
     private FirebaseUser currentUser;
     private string userBoothId;
     private string downloadUrl;
+    public StandSelectionManager standSelectionManager;
 
     void Start()
     {
@@ -147,6 +150,34 @@ public class LogoUploadManager : MonoBehaviour
         }
     }
 
+    public void RemoveLogo()
+    {
+        FirebaseUser currentUser = auth.CurrentUser;
+        if (currentUser == null)
+        {
+            Debug.LogError("No user is logged in. Cannot remove logo.");
+            return;
+        }
+
+        DocumentReference userDocRef = db.Collection("bus_users").Document(currentUser.UserId);
+
+        var updates = new Dictionary<string, object>
+        {
+            { "logo", FieldValue.Delete }
+        };
+
+        userDocRef.UpdateAsync(updates).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                Debug.LogError("Error removing logo: " + task.Exception);
+                return;
+            }
+            Debug.Log("Logo successfully removed.");
+
+            standSelectionManager.LoadBusinessLogo();
+        });
+    }
 
     void SaveLogoUrlToFirestore(string logoUrl)
     {
@@ -157,6 +188,10 @@ public class LogoUploadManager : MonoBehaviour
             {
                 Debug.LogError("Error updating Firestore with logo URL: " + task.Exception);
                 return;
+            }
+            if (standSelectionManager != null)
+            {
+                standSelectionManager.LoadBusinessLogo();
             }
 
             Debug.Log("Firestore updated with logo URL for business user: " + currentUser.UserId);

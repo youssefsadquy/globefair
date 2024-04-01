@@ -15,6 +15,7 @@ public class BusinessDashboardManager : MonoBehaviour
     public Button logoutButton;
     public GameObject landingCanvas;
     public GameObject businessDashboardCanvas;
+    public StandSelectionManager standSelectionManager;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -58,6 +59,7 @@ public class BusinessDashboardManager : MonoBehaviour
             else
             {
                 ResetDashboard();
+                standSelectionManager.gameObject.SetActive(false);
             }
         }
     }
@@ -85,7 +87,7 @@ public class BusinessDashboardManager : MonoBehaviour
             {
                 Debug.LogError("Business does not exist!");
                 businessNameText.text = "Business Name";
-                emailText.text = "Email"; 
+                emailText.text = "Email";
             }
         });
     }
@@ -136,12 +138,6 @@ public class BusinessDashboardManager : MonoBehaviour
             businessDashboardCanvas.SetActive(false);
         }
 
-        GameObject businessCustomisationCanvas = GameObject.Find("BusinessCustomisation");
-        if (businessCustomisationCanvas != null)
-        {
-            businessCustomisationCanvas.SetActive(false);
-        }
-
         landingCanvas.SetActive(true);
     }
 
@@ -153,23 +149,15 @@ public class BusinessDashboardManager : MonoBehaviour
             return;
         }
 
-        // Fetch and display the current user's business details again
         FetchBusinessDetails();
 
-        // Ensure all related canvases are updated and active
         if (businessDashboardCanvas != null)
         {
             businessDashboardCanvas.SetActive(true);
         }
 
-        GameObject businessCustomisationCanvas = GameObject.Find("BusinessCustomisation");
-        if (businessCustomisationCanvas != null)
-        {
-            businessCustomisationCanvas.SetActive(true);
-        }
+
     }
-
-
 
     private void ResetDashboard()
     {

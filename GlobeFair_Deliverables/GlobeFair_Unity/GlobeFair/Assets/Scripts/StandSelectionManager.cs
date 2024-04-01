@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using Firebase.Extensions;
 using System.Collections.Generic;
 using System;
+using System.Collections;
+using UnityEngine.Networking;
+
 
 public class StandSelectionManager : MonoBehaviour
 {
@@ -17,6 +20,8 @@ public class StandSelectionManager : MonoBehaviour
     private Sprite defaultBoothImage;
     private FirebaseUser currentUser;
     private bool isGridInitialized = false;
+    public Image logoImage;
+    public Sprite defaultLogoSprite;
 
     void Start()
     {
@@ -41,6 +46,15 @@ public class StandSelectionManager : MonoBehaviour
         defaultBoothImage = boothDisplayImage.sprite;
 
         auth.StateChanged += AuthStateChanged;
+    }
+
+    void OnEnable()
+    {
+        if (auth.CurrentUser != null)
+        {
+            LoadBusinessLogo();
+            InitializeOrRefreshCanvas();
+        }
     }
 
     void PopulateGridWithStands()
@@ -243,6 +257,10 @@ public class StandSelectionManager : MonoBehaviour
             Debug.LogError("No user is logged in.");
             return;
         }
+        if (auth.CurrentUser != null)
+        {
+            LoadBusinessLogo();
+        }
 
         ClearGrid();
         LoadSelectedStandId();
@@ -285,9 +303,71 @@ public class StandSelectionManager : MonoBehaviour
         }
     }
 
-
     void OnDestroy()
     {
         auth.StateChanged -= AuthStateChanged;
+    }
+
+
+
+    public void LoadBusinessLogo()
+    {
+        if (auth.CurrentUser == null)
+        {
+            Debug.LogWarning("LoadBusinessLogo called but no user is logged in.");
+            return;
+        }
+
+        DocumentReference userDocRef = db.Collection("bus_users").Document(auth.CurrentUser.UserId);
+
+        userDocRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError("Error fetching user data: " + task.Exception);
+                return;
+            }
+
+            DocumentSnapshot snapshot = task.Result;
+            if (snapshot.Exists && snapshot.ContainsField("logo"))
+            {
+                string logoUrl = snapshot.GetValue<string>("logo");
+                if (!string.IsNullOrEmpty(logoUrl))
+                {
+                    StartCoroutine(DownloadAndSetLogoImage(logoUrl));
+                }
+                else
+                {
+                    ResetToDefaultLogo();
+                }
+            }
+            else
+            {
+                Debug.LogError("User document does not exist or does not have a logo.");
+                ResetToDefaultLogo();
+            }
+        });
+    }
+
+    private void ResetToDefaultLogo()
+    {
+        logoImage.sprite = defaultLogoSprite;
+    }
+
+    private IEnumerator DownloadAndSetLogoImage(string logoUrl)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(logoUrl);
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(www);
+            logoImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            logoImage.preserveAspect = true;
+        }
+        else
+        {
+            Debug.LogError("Error downloading the logo image: " + www.error);
+        }
     }
 }
