@@ -68,6 +68,7 @@ TagManager:
   - Stand_19_Logo_3
   - Stand_14_Logo_1
   - Stand_2_Monitor_1
+  - FeedbackText1
   layers:
   - Default
   - TransparentFX
