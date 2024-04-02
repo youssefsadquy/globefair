@@ -63,7 +63,8 @@ public class CreateBusinessListing : MonoBehaviour
             {"location", jobLocationInput.text},
             {"salary", salaryInput.text},
             {"howToApply", howToApplyInput.text},
-            {"businessUid", auth.CurrentUser.UserId}
+            {"businessUid", auth.CurrentUser.UserId},
+            {"creationDate", Timestamp.GetCurrentTimestamp()}
         };
 
         docRef.SetAsync(newListing).ContinueWithOnMainThread(task =>
