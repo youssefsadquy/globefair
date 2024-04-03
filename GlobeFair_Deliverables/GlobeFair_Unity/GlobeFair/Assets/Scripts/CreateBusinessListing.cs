@@ -9,7 +9,6 @@ using System.Collections;
 
 public class CreateBusinessListing : MonoBehaviour
 {
-    // UI references
     public InputField jobTitleInput;
     public InputField jobDescriptionInput;
     public InputField jobLocationInput;
