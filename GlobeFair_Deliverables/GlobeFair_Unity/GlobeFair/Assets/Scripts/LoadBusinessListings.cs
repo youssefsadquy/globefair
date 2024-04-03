@@ -72,8 +72,10 @@ public class LoadBusinessListings : MonoBehaviour
         if (documentSnapshot.Exists)
         {
             Dictionary<string, object> listingData = documentSnapshot.ToDictionary();
-            listingScript.Setup(listingData);
+            string documentId = documentSnapshot.Id;
+            listingScript.Setup(listingData, documentId);
         }
         Canvas.ForceUpdateCanvases();
     }
+
 }

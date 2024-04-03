@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using Firebase.Extensions;
 
 public class ListingPrefabScript : MonoBehaviour
 {
@@ -11,9 +12,12 @@ public class ListingPrefabScript : MonoBehaviour
     public Text salaryText;
     public Text creationDateText;
 
-    public void Setup(Dictionary<string, object> data)
+    public string documentId;
+
+    public void Setup(Dictionary<string, object> data, string docId)
     {
         Debug.Log("Setting up listing with data: " + data.ToString());
+        documentId = docId;
 
         if (data.TryGetValue("jobTitle", out object jobTitle))
         {
@@ -42,6 +46,30 @@ public class ListingPrefabScript : MonoBehaviour
         {
             Debug.Log("Salary: " + (salary as string));
             salaryText.text = salary as string;
+        }
+    }
+
+    public void DeleteListing()
+    {
+        if (!string.IsNullOrEmpty(documentId))
+        {
+            FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+            db.Collection("businessListings").Document(documentId).DeleteAsync().ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.LogError("Error deleting listing: " + task.Exception);
+                }
+                else
+                {
+                    Debug.Log("Listing deleted successfully.");
+                    Destroy(gameObject);
+                }
+            });
+        }
+        else
+        {
+            Debug.LogError("Document ID is null or empty.");
         }
     }
 }
