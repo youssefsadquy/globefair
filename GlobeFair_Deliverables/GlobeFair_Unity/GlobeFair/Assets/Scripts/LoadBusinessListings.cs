@@ -2,6 +2,7 @@ using Firebase.Firestore;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 using Firebase.Extensions;
 using Firebase.Auth;
 
@@ -11,6 +12,7 @@ public class LoadBusinessListings : MonoBehaviour
     public Transform contentPanel;
     private FirebaseFirestore db;
     private string businessUid;
+    public Text feedbackText;
 
     void Start()
     {
@@ -78,4 +80,22 @@ public class LoadBusinessListings : MonoBehaviour
         Canvas.ForceUpdateCanvases();
     }
 
+    public void ShowFeedback(string message, bool isSuccess)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(5));
+        }
+    }
+
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
+    }
 }

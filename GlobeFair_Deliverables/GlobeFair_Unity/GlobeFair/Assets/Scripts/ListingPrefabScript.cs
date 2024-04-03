@@ -2,6 +2,7 @@ using Firebase.Firestore;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 using System;
 using Firebase.Extensions;
 
@@ -11,8 +12,13 @@ public class ListingPrefabScript : MonoBehaviour
     public Text jobLocationText;
     public Text salaryText;
     public Text creationDateText;
+    private LoadBusinessListings loadBusinessListingsScript;
 
     public string documentId;
+    private void Start()
+    {
+        loadBusinessListingsScript = FindObjectOfType<LoadBusinessListings>();
+    }
 
     public void Setup(Dictionary<string, object> data, string docId)
     {
@@ -59,10 +65,12 @@ public class ListingPrefabScript : MonoBehaviour
                 if (task.IsFaulted)
                 {
                     Debug.LogError("Error deleting listing: " + task.Exception);
+                    loadBusinessListingsScript?.ShowFeedback("Failed to delete listing.", false);
                 }
                 else
                 {
                     Debug.Log("Listing deleted successfully.");
+                    loadBusinessListingsScript?.ShowFeedback("Listing deleted successfully.", true);
                     Destroy(gameObject);
                 }
             });
@@ -70,6 +78,7 @@ public class ListingPrefabScript : MonoBehaviour
         else
         {
             Debug.LogError("Document ID is null or empty.");
+            loadBusinessListingsScript?.ShowFeedback("Cannot delete: No listing selected.", false);
         }
     }
 }
