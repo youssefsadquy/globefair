@@ -15,6 +15,7 @@ public class NavigationManager : MonoBehaviour
     public GameObject businessDashboardCanvas;
     public GameObject canvasCustomization;
     public GameObject BusinessListings;
+    public GameObject EditListings;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -157,6 +158,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignupBusiness.SetActive(false);
     }
 
+    // Method to return to the Customisation canvas from any other canvas
     public void GoToCanvasCustomisation()
     {
         canvasLanding.SetActive(false);
@@ -169,6 +171,7 @@ public class NavigationManager : MonoBehaviour
         userDashboardCanvas.SetActive(false);
     }
 
+    // Method to return to the Dashboard canvas from any other canvas
     public void GoTobusinessDashboardCanvas()
     {
         canvasLanding.SetActive(false);
@@ -182,6 +185,7 @@ public class NavigationManager : MonoBehaviour
         BusinessListings.SetActive(false);
     }
 
+    // Method to return to the Listings canvas from any other canvas
     public void GoTobusinessListingsCanvas()
     {
         canvasLanding.SetActive(false);
@@ -193,5 +197,6 @@ public class NavigationManager : MonoBehaviour
         businessDashboardCanvas.SetActive(false);
         userDashboardCanvas.SetActive(false);
         BusinessListings.SetActive(true);
+        EditListings.SetActive(false);
     }
 }

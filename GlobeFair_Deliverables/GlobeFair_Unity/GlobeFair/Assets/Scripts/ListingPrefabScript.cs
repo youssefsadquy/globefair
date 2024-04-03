@@ -13,8 +13,10 @@ public class ListingPrefabScript : MonoBehaviour
     public Text salaryText;
     public Text creationDateText;
     private LoadBusinessListings loadBusinessListingsScript;
+    private ListingEditForm listingEditFormScript;
 
     public string documentId;
+
     private void Start()
     {
         loadBusinessListingsScript = FindObjectOfType<LoadBusinessListings>();
@@ -80,5 +82,25 @@ public class ListingPrefabScript : MonoBehaviour
             Debug.LogError("Document ID is null or empty.");
             loadBusinessListingsScript?.ShowFeedback("Cannot delete: No listing selected.", false);
         }
+    }
+
+    public void OpenEditForm()
+    {
+        FirebaseFirestore db = FirebaseFirestore.DefaultInstance;
+        DocumentReference docRef = db.Collection("businessListings").Document(documentId);
+        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || !task.Result.Exists)
+            {
+                Debug.LogError("Error fetching listing: " + task.Exception);
+                loadBusinessListingsScript?.ShowFeedback("Failed to fetch listing for editing.", false);
+            }
+            else
+            {
+                DocumentSnapshot snapshot = task.Result;
+                Dictionary<string, object> data = snapshot.ToDictionary();
+                ListingEditForm.Instance.OpenEditForm(data, documentId);
+            }
+        });
     }
 }
