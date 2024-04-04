@@ -97,7 +97,7 @@ public class CreateBusinessListing : MonoBehaviour
         {
             feedbackText.text = message;
             feedbackText.color = isSuccess ? Color.green : Color.red;
-            StartCoroutine(ClearFeedbackAfterDelay(5));
+            StartCoroutine(ClearFeedbackAfterDelay(3));
         }
         else
         {
