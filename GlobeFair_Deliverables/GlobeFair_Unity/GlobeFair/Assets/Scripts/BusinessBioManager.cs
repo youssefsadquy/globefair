@@ -60,6 +60,24 @@ public class BusinessBioManager : MonoBehaviour
         }
     }
 
+    void OnDisable()
+    {
+        ClearInputFields();
+    }
+
+    void ClearInputFields()
+    {
+        businessNameInputField.text = "";
+        descriptionInputField.text = "";
+        missionInputField.text = "";
+        industryInputField.text = "";
+        foundedInputField.text = "";
+        employeesInputField.text = "";
+        websiteInputField.text = "";
+        contactEmailInputField.text = "";
+        headquartersInputField.text = "";
+    }
+
     public void LoadBusinessBio()
     {
         DocumentReference businessDocRef = db.Collection("bus_users").Document(businessUid);
@@ -100,5 +118,46 @@ public class BusinessBioManager : MonoBehaviour
             { "contactEmail", contactEmailInputField.text },
             { "headquarters", headquartersInputField.text }
         };
+
+        businessDocRef.UpdateAsync(updatedBio).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted)
+            {
+                ShowFeedback("Error saving business bio: " + task.Exception, false);
+            }
+            else
+            {
+                ShowFeedback("Business bio updated successfully.", true);
+                LoadBusinessBio();
+            }
+        });
+    }
+
+    public void ShowFeedback(string message, bool isSuccess)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+    }
+
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
+        ScrollToTop();
+    }
+
+    private void ScrollToTop()
+    {
+        if (verticalScrollbar)
+        {
+            verticalScrollbar.value = 1;
+        }
     }
 }
