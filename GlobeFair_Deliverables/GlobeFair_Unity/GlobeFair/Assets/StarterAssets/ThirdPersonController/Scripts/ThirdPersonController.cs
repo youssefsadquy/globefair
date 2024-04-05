@@ -2,7 +2,6 @@
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
-
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
 
@@ -14,6 +13,8 @@ namespace StarterAssets
 #endif
     public class ThirdPersonController : MonoBehaviour
     {
+        public bool enableInput = true;
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -154,6 +155,10 @@ namespace StarterAssets
 
         private void Update()
         {
+            if (!enableInput)
+            {
+                return;
+            }
             _hasAnimator = TryGetComponent(out _animator);
 
             JumpAndGravity();
@@ -163,7 +168,18 @@ namespace StarterAssets
 
         private void LateUpdate()
         {
+            if (!enableInput)
+            {
+                return;
+            }
             CameraRotation();
+        }
+
+        public void SetInputEnabled(bool enabled)
+        {
+            enableInput = enabled;
+            Cursor.visible = !enabled;
+            Cursor.lockState = enabled ? CursorLockMode.Locked : CursorLockMode.None;
         }
 
         private void AssignAnimationIDs()

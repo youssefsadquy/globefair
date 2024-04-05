@@ -2,6 +2,7 @@ using Firebase.Firestore;
 using UnityEngine;
 using Firebase.Extensions;
 using UnityEngine.UI;
+using StarterAssets;
 
 public class StandMonitor : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class StandMonitor : MonoBehaviour
     [SerializeField] private float interactionDistance = 3.0f;
     [SerializeField] private Canvas standInfoCanvas;
     [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private ThirdPersonController thirdPersonController;
 
     public bool IsStandCanvasActive => standInfoCanvas.gameObject.activeSelf;
 
@@ -43,6 +45,7 @@ public class StandMonitor : MonoBehaviour
                 if (isCanvasActive)
                 {
                     currentMonitorTag = gameObject.tag;
+                    thirdPersonController.SetInputEnabled(!isCanvasActive);
                 }
             }
         }
@@ -54,6 +57,7 @@ public class StandMonitor : MonoBehaviour
                 standInfoCanvas.gameObject.SetActive(false);
                 ToggleCursor(false);
                 currentMonitorTag = "";
+                thirdPersonController.SetInputEnabled(true);
             }
             outlineObject.SetActive(false);
             interactionPrompt.SetActive(false);
@@ -64,6 +68,7 @@ public class StandMonitor : MonoBehaviour
     {
         Cursor.visible = isActive;
         Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
+        thirdPersonController.SetInputEnabled(!isActive);
     }
 
     public string GetCurrentMonitorTag()
