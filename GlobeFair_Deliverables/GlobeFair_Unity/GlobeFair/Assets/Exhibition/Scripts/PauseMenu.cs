@@ -31,7 +31,6 @@ public class PauseMenu : MonoBehaviour
         StartAutoSave();
     }
 
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -51,8 +50,6 @@ public class PauseMenu : MonoBehaviour
             }
         }
     }
-
-
 
     void Pause()
     {
@@ -79,8 +76,6 @@ public class PauseMenu : MonoBehaviour
             saveConfirmationUI.SetActive(false);
         }
     }
-
-
 
     public void LoadDashboard()
     {

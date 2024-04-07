@@ -13,10 +13,11 @@ public class StandMonitor : MonoBehaviour
     [SerializeField] private Canvas standInfoCanvas;
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private ThirdPersonController thirdPersonController;
+    public Texture2D mouseIcon;
 
     public bool IsStandCanvasActive => standInfoCanvas.gameObject.activeSelf;
 
-    private string currentMonitorTag; 
+    private string currentMonitorTag;
     private bool isCanvasActive = false;
 
     private void Start()
@@ -66,6 +67,17 @@ public class StandMonitor : MonoBehaviour
 
     private void ToggleCursor(bool isActive)
     {
+        if (isActive)
+        {
+            // When the canvas is active using the custom cursor
+            Cursor.SetCursor(mouseIcon, new Vector2(16, 16), CursorMode.Auto);
+        }
+
+        if (!isActive)
+        {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+
         Cursor.visible = isActive;
         Cursor.lockState = isActive ? CursorLockMode.None : CursorLockMode.Locked;
         thirdPersonController.SetInputEnabled(!isActive);
