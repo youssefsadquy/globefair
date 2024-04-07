@@ -46,7 +46,14 @@ public class StandMonitor : MonoBehaviour
                 if (isCanvasActive)
                 {
                     currentMonitorTag = gameObject.tag;
+                    Debug.Log("Current Monitor Tag: " + currentMonitorTag);
                     thirdPersonController.SetInputEnabled(!isCanvasActive);
+
+                    FetchSetInformation fetchSetInformation = standInfoCanvas.GetComponentInChildren<FetchSetInformation>(true);
+                    if (fetchSetInformation != null)
+                    {
+                        fetchSetInformation.SetCurrentMonitorTag(currentMonitorTag);
+                    }
                 }
             }
         }
@@ -69,7 +76,6 @@ public class StandMonitor : MonoBehaviour
     {
         if (isActive)
         {
-            // When the canvas is active using the custom cursor
             Cursor.SetCursor(mouseIcon, new Vector2(16, 16), CursorMode.Auto);
         }
 
