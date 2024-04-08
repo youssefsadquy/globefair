@@ -4,6 +4,8 @@ using Firebase.Extensions;
 using UnityEngine.UI;
 using StarterAssets;
 
+// Method that allows interaction with stands, with functionality of storing
+// and passing tags to relevant canvases
 public class StandMonitor : MonoBehaviour
 {
     [SerializeField] private GameObject interactionPrompt;
@@ -30,6 +32,7 @@ public class StandMonitor : MonoBehaviour
 
     private void Update()
     {
+        // Checking player proximity and that pause menu is not active for clashing
         bool isPlayerClose = Vector3.Distance(playerTransform.position, transform.position) < interactionDistance;
         bool isPauseMenuActive = pauseMenuUI.activeSelf;
 
@@ -38,6 +41,7 @@ public class StandMonitor : MonoBehaviour
             outlineObject.SetActive(true);
             interactionPrompt.SetActive(true);
 
+            // Fetch when the interaction starts and pass tag to relevant canvas
             if (Input.GetKeyDown(KeyCode.X))
             {
                 isCanvasActive = !isCanvasActive;
@@ -69,6 +73,7 @@ public class StandMonitor : MonoBehaviour
                     }
                 }
 
+                // Clearing all the business info fields for next monitor
                 if (!isCanvasActive)
                 {
                     BusinessInformationFetcher infoFetcher =
@@ -95,6 +100,8 @@ public class StandMonitor : MonoBehaviour
         }
     }
 
+    // Controller for the cursor with custom cursor application
+    // locking character and camera on enabling
     private void ToggleCursor(bool isActive)
     {
         if (isActive)
