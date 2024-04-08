@@ -14,6 +14,7 @@ public class StandMonitor : MonoBehaviour
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private ThirdPersonController thirdPersonController;
     public Texture2D mouseIcon;
+    [SerializeField] private BusinessFAQFetcher businessFaqFetcher;
 
     public bool IsStandCanvasActive => standInfoCanvas.gameObject.activeSelf;
 
@@ -59,6 +60,12 @@ public class StandMonitor : MonoBehaviour
                     if (infoFetcher != null)
                     {
                         infoFetcher.InitializeWithMonitorTag(currentMonitorTag);
+                    }
+
+                    BusinessFAQFetcher faqFetcher = standInfoCanvas.GetComponentInChildren<BusinessFAQFetcher>(true);
+                    if (faqFetcher != null)
+                    {
+                        faqFetcher.InitializeWithMonitorTag(currentMonitorTag);
                     }
                 }
 
