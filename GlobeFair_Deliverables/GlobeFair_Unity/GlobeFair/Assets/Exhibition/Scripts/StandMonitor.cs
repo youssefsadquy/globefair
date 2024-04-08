@@ -54,6 +54,22 @@ public class StandMonitor : MonoBehaviour
                     {
                         fetchSetInformation.SetCurrentMonitorTag(currentMonitorTag);
                     }
+
+                    BusinessInformationFetcher infoFetcher = standInfoCanvas.GetComponentInChildren<BusinessInformationFetcher>(true);
+                    if (infoFetcher != null)
+                    {
+                        infoFetcher.InitializeWithMonitorTag(currentMonitorTag);
+                    }
+                }
+
+                if (!isCanvasActive)
+                {
+                    BusinessInformationFetcher infoFetcher =
+                        standInfoCanvas.GetComponentInChildren<BusinessInformationFetcher>(true);
+                    if (infoFetcher != null)
+                    {
+                        infoFetcher.ClearBusinessInformation();
+                    }
                 }
             }
         }
