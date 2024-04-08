@@ -19,7 +19,7 @@ public class BusinessInformationFetcher : MonoBehaviour
     private FirebaseFirestore db;
     private string currentMonitorTag;
 
-    void Start()
+    void OnEnable()
     {
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
@@ -31,6 +31,12 @@ public class BusinessInformationFetcher : MonoBehaviour
             db = FirebaseFirestore.DefaultInstance;
         });
     }
+
+    public void RefreshBusinessInformation()
+    {
+        FetchAndDisplayBusinessInformation();
+    }
+
 
     public void InitializeWithMonitorTag(string tag)
     {
