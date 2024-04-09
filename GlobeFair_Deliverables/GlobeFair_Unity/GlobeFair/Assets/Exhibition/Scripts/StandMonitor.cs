@@ -17,6 +17,7 @@ public class StandMonitor : MonoBehaviour
     [SerializeField] private ThirdPersonController thirdPersonController;
     public Texture2D mouseIcon;
     [SerializeField] private BusinessFAQFetcher businessFaqFetcher;
+    [SerializeField] private BusinessListingsFetcher businessListingsFetcher;
 
     public bool IsStandCanvasActive => standInfoCanvas.gameObject.activeSelf;
 
@@ -70,6 +71,12 @@ public class StandMonitor : MonoBehaviour
                     if (faqFetcher != null)
                     {
                         faqFetcher.InitializeWithMonitorTag(currentMonitorTag);
+                    }
+
+                    BusinessListingsFetcher businessListingsFetcher = standInfoCanvas.GetComponentInChildren<BusinessListingsFetcher>(true);
+                    if (businessListingsFetcher != null)
+                    {
+                        businessListingsFetcher.InitializeWithMonitorTag(currentMonitorTag);
                     }
                 }
 
