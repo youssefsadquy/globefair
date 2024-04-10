@@ -8,7 +8,6 @@ using StarterAssets;
 // and passing tags to relevant canvases
 public class StandMonitor : MonoBehaviour
 {
-    [SerializeField] private GameObject interactionPrompt;
     [SerializeField] private GameObject outlineObject;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float interactionDistance = 3.0f;
@@ -26,9 +25,19 @@ public class StandMonitor : MonoBehaviour
 
     private void Start()
     {
-        interactionPrompt.SetActive(false);
         standInfoCanvas.gameObject.SetActive(false);
         ToggleCursor(false);
+    }
+
+    // Allow register and unregister monitors on distance
+    private void OnEnable()
+    {
+        InteractionPromptManager.Instance.RegisterMonitor(transform);
+    }
+
+    private void OnDisable()
+    {
+        InteractionPromptManager.Instance.UnregisterMonitor(transform);
     }
 
     private void Update()
@@ -40,7 +49,6 @@ public class StandMonitor : MonoBehaviour
         if (isPlayerClose && !isPauseMenuActive)
         {
             outlineObject.SetActive(true);
-            interactionPrompt.SetActive(true);
 
             // Fetch when the interaction starts and pass tag to relevant canvas
             if (Input.GetKeyDown(KeyCode.X))
@@ -103,7 +111,6 @@ public class StandMonitor : MonoBehaviour
                 thirdPersonController.SetInputEnabled(true);
             }
             outlineObject.SetActive(false);
-            interactionPrompt.SetActive(false);
         }
     }
 
