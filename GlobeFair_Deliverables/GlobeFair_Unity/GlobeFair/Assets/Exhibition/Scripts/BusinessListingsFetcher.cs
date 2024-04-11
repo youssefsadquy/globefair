@@ -97,7 +97,7 @@ public class BusinessListingsFetcher : MonoBehaviour
                         ListingItem listingItemScript = listingItem.GetComponent<ListingItem>();
                         if (listingItemScript != null)
                         {
-                            listingItemScript.SetListingInfo(jobTitle, jobDescription, location, salary, howToApply, creationDate.ToDateTime().ToString());
+                            listingItemScript.SetListingInfo(jobTitle, jobDescription, location, salary, howToApply, creationDate.ToDateTime().ToString(), document.Id);
                         }
                         else
                         {
