@@ -15,6 +15,7 @@ public class ListingItem : MonoBehaviour
     [SerializeField] private Text howToApplyText;
     [SerializeField] private Text creationDateText;
     [SerializeField] private Button applyButton;
+    [SerializeField] private Text feedbackText;
 
     private FirebaseFirestore db;
     private string listingId;
@@ -46,6 +47,7 @@ public class ListingItem : MonoBehaviour
             if (task.Result.Exists)
             {
                 Debug.Log("Please create a private account to apply.");
+                ShowFeedback("Please create a private account to apply.", false);
             }
             else
             {
@@ -59,6 +61,7 @@ public class ListingItem : MonoBehaviour
                     else
                     {
                         Debug.Log("User not found in normal users either. Authentication issue.");
+                        ShowFeedback("User not found in normal users either. Authentication issue.", false);
                     }
                 });
             }
@@ -80,11 +83,34 @@ public class ListingItem : MonoBehaviour
             if (task.IsCompleted && !task.IsFaulted)
             {
                 Debug.Log("Application sent successfully.");
+                ShowFeedback("Application sent successfully.", true);
             }
             else
             {
                 Debug.LogError("Error applying for the job: " + task.Exception);
+                ShowFeedback("Error applying for the job: " + task.Exception, false);
             }
         });
+    }
+
+    // Method to display messages to user UI feedback field
+    public void ShowFeedback(string message, bool isSuccess)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+    }
+
+    // Method to clear feedback
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
     }
 }
