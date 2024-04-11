@@ -25,9 +25,14 @@ public class InteractionPromptManager : MonoBehaviour
         }
     }
 
-    // Updates on everyframe to find closest monitor to player
+    // Stopping if the interactionPrompt or playerTransform has been destroyed
+    // while they still exist check the closest monitor
     private void Update()
     {
+        if (interactionPrompt == null || playerTransform == null)
+        {
+            return;
+        }
         CheckClosestMonitor();
     }
 
@@ -55,6 +60,8 @@ public class InteractionPromptManager : MonoBehaviour
 
         foreach (Transform monitor in monitors)
         {
+            if (monitor == null) continue;
+
             float distance = Vector3.Distance(playerTransform.position, monitor.position);
             if (distance < closestDistance && distance < interactionDistance)
             {
@@ -64,5 +71,13 @@ public class InteractionPromptManager : MonoBehaviour
         }
 
         interactionPrompt.SetActive(closestMonitor != null);
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }
