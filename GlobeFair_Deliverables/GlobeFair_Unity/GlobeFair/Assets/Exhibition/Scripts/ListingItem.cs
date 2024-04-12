@@ -4,6 +4,7 @@ using System;
 using Firebase.Firestore;
 using Firebase.Extensions;
 using Firebase.Auth;
+using System.Collections;
 
 // Method attached to Listing prefab to populate the fields
 public class ListingItem : MonoBehaviour
@@ -71,24 +72,56 @@ public class ListingItem : MonoBehaviour
     // Method to send application and store in candidate collection
     private void ApplyForJob(string userId)
     {
-        DocumentReference candidateDoc = db.Collection("candidates").Document();
-
-        candidateDoc.SetAsync(new
+        DocumentReference userDocRef = db.Collection("users").Document(userId);
+        userDocRef.GetSnapshotAsync().ContinueWithOnMainThread(userTask =>
         {
-            userId = userId,
-            listingId = this.listingId,
-            applicationDate = Timestamp.GetCurrentTimestamp()
-        }).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted && !task.IsFaulted)
+            if (userTask.IsFaulted || userTask.IsCanceled)
             {
-                Debug.Log("Application sent successfully.");
-                ShowFeedback("Application sent successfully.", true);
+                Debug.LogError("Error fetching user details: " + userTask.Exception);
+                ShowFeedback("Error fetching user details. Please try again.", false);
+                return;
+            }
+
+            // Checking if users uploaded CV before sending application
+            DocumentSnapshot userSnapshot = userTask.Result;
+            if (userSnapshot.Exists)
+            {
+                string cvUrl = userSnapshot.TryGetValue("cv", out cvUrl) ? cvUrl : null;
+
+                if (cvUrl == null)
+                {
+                    ShowFeedback("Please upload your CV before applying for jobs.", false);
+                }
+                else
+                {
+                    DocumentReference candidateDoc = db.Collection("candidates").Document();
+                    var applicationData = new
+                    {
+                        userId = userId,
+                        listingId = this.listingId,
+                        cvUrl = cvUrl,
+                        applicationDate = Timestamp.GetCurrentTimestamp()
+                    };
+
+                    candidateDoc.SetAsync(applicationData).ContinueWithOnMainThread(task =>
+                    {
+                        if (task.IsCompleted && !task.IsFaulted)
+                        {
+                            Debug.Log("Application sent successfully.");
+                            ShowFeedback("Application sent successfully.", true);
+                        }
+                        else
+                        {
+                            Debug.LogError("Error applying for the job: " + task.Exception);
+                            ShowFeedback("Error applying for the job. Please try again.", false);
+                        }
+                    });
+                }
             }
             else
             {
-                Debug.LogError("Error applying for the job: " + task.Exception);
-                ShowFeedback("Error applying for the job: " + task.Exception, false);
+                Debug.LogError("User document does not exist!");
+                ShowFeedback("User document does not exist.", false);
             }
         });
     }

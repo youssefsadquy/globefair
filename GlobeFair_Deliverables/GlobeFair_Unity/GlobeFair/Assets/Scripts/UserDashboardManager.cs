@@ -26,6 +26,13 @@ public class UserDashboardManager : MonoBehaviour
     private FirebaseStorage storage;
     private FirebaseUser currentUser;
 
+    public Image cvStatusImage;
+    public Sprite greenTickSprite;
+    public Sprite redCrossSprite;
+    public Button removeCVButton;
+    private IDisposable firestoreListener;
+    public Text feedbackText;
+
     void Awake()
     {
         auth = FirebaseAuth.DefaultInstance;
@@ -47,8 +54,12 @@ public class UserDashboardManager : MonoBehaviour
         {
             Debug.LogError("No user is logged in.");
         }
+
+        SetupFirestoreListener();
+        removeCVButton.onClick.AddListener(() => RemoveCV());
     }
 
+    // Method to display user info on dashboard
     private void FetchUserDetails()
     {
         if (currentUser == null) return;
@@ -86,6 +97,7 @@ public class UserDashboardManager : MonoBehaviour
         }
     }
 
+    // Onclick for upload CV button
     private void UploadCV()
     {
         var extensions = new[] { new ExtensionFilter("PDF Files", "pdf") };
@@ -97,6 +109,7 @@ public class UserDashboardManager : MonoBehaviour
         }
     }
 
+    // Method to upload button on storage and extract URL
     private IEnumerator UploadPDF(string path)
     {
         var storageRef = storage.GetReferenceFromUrl("gs://globefair-46eb2.appspot.com");
@@ -130,9 +143,92 @@ public class UserDashboardManager : MonoBehaviour
         else
         {
             Debug.Log("File uploaded successfully.");
+
+            var getDownloadUrlTask = pdfRef.GetDownloadUrlAsync();
+            yield return new WaitUntil(() => getDownloadUrlTask.IsCompleted);
+
+            if (getDownloadUrlTask.IsFaulted || getDownloadUrlTask.IsCanceled)
+            {
+                Debug.LogError("Error getting download URL: " + getDownloadUrlTask.Exception);
+            }
+            else
+            {
+                string pdfUrl = getDownloadUrlTask.Result.ToString();
+                SavePdfUrlToFirestore(pdfUrl);
+            }
         }
     }
 
+    // Method to set the CV url under the current user document
+    private void SavePdfUrlToFirestore(string pdfUrl)
+    {
+        DocumentReference userDocRef = db.Collection("users").Document(currentUser.UserId);
+        userDocRef.UpdateAsync("cv", pdfUrl).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError("Error updating Firestore with PDF URL: " + task.Exception);
+            }
+            else
+            {
+                Debug.Log("Firestore updated with PDF URL for user: " + currentUser.UserId);
+            }
+        });
+    }
+
+    // Live UI update for CV uploading status
+    private void SetupFirestoreListener()
+    {
+        DocumentReference userDocRef = db.Collection("users").Document(currentUser.UserId);
+        firestoreListener = userDocRef.Listen(snapshot =>
+        {
+            if (snapshot.Exists && snapshot.TryGetValue("cv", out string cvLink))
+            {
+                cvStatusImage.sprite = greenTickSprite;
+                ShowFeedback("CV is uploaded.", true);
+            }
+            else
+            {
+                cvStatusImage.sprite = redCrossSprite;
+            }
+        });
+    }
+
+    // Method to delete uploaded CV
+    private void RemoveCV()
+    {
+        var storageRef = storage.GetReferenceFromUrl("gs://globefair-46eb2.appspot.com/cvs/" + currentUser.UserId + ".pdf");
+        storageRef.DeleteAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError("Error deleting CV from storage: " + task.Exception);
+                ShowFeedback("Error deleting CV from storage: " + task.Exception, false);
+            }
+            else
+            {
+                Debug.Log("CV deleted from storage successfully.");
+                ShowFeedback("CV deleted from storage successfully.", true);
+
+                DocumentReference userDocRef = db.Collection("users").Document(currentUser.UserId);
+                userDocRef.UpdateAsync("cv", FieldValue.Delete).ContinueWithOnMainThread(task =>
+                {
+                    if (task.IsFaulted || task.IsCanceled)
+                    {
+                        Debug.LogError("Error removing CV from Firestore: " + task.Exception);
+                        ShowFeedback("Error removing CV from Firestore: " + task.Exception, false);
+                    }
+                    else
+                    {
+                        Debug.Log("CV removed from Firestore successfully.");
+                        ShowFeedback("CV removed from Firestore successfully.", true);
+                    }
+                });
+            }
+        });
+    }
+
+    // Onclick for start fair button
     public void StartFair()
     {
         LoadingManager.Instance.EnableLoading("Loading the fair...");
@@ -155,6 +251,7 @@ public class UserDashboardManager : MonoBehaviour
         LoadingManager.Instance.DisableLoading();
     }
 
+    // Onclick for logout button
     private void LogoutUser()
     {
         auth.SignOut();
@@ -169,9 +266,31 @@ public class UserDashboardManager : MonoBehaviour
         emailText.text = "Email";
     }
 
+    // Method to display messages to user UI feedback field
+    public void ShowFeedback(string message, bool isSuccess)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+    }
+
+    // Method to clear feedback
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
+    }
+
     void OnDestroy()
     {
         uploadCVButton.onClick.RemoveListener(() => UploadCV());
         startGameButton.onClick.RemoveListener(() => StartFair());
+        firestoreListener?.Dispose();
     }
 }
