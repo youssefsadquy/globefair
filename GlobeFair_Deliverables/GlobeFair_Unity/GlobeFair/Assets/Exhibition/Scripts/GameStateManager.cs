@@ -6,23 +6,27 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using StarterAssets;
+using Firebase.Storage;
+using UMA.CharacterSystem;
 
 // Script to save and load game states from firebase under user UID
 public class GameStateManager : MonoBehaviour
 {
     FirebaseFirestore db;
     FirebaseAuth auth;
+    FirebaseStorage storage;
     public static bool GameStateLoaded = false;
     public CameraShowcase cameraShowcase;
     public CinemachineVirtualCamera thirdPersonCinemachineCamera;
     public GameObject thirdPersonCharacter;
     public GameObject skipPanel;
-
+    public DynamicCharacterAvatar avatar;
 
     private void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
         auth = FirebaseAuth.DefaultInstance;
+        storage = FirebaseStorage.DefaultInstance;
 
         GameStateLoaded = false;
 
@@ -86,6 +90,12 @@ public class GameStateManager : MonoBehaviour
 
                 ApplyGameState(snapshot.ToDictionary());
 
+                if (avatar != null)
+                {
+                    // Fetch the avatar data from Firebase Storage
+                    LoadAvatarCustomization();
+                }
+
                 ActivateGamePlay();
             }
             else
@@ -95,6 +105,26 @@ public class GameStateManager : MonoBehaviour
                 GameStateLoaded = false;
                 cameraShowcase.StartShowcase();
             }
+        });
+    }
+
+    // Method that allows to load avatar customisation if existing
+    private void LoadAvatarCustomization()
+    {
+        var avatarDataRef = storage.GetReference($"umaData/{auth.CurrentUser.UserId}.json");
+        avatarDataRef.GetBytesAsync(long.MaxValue).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError("Error getting avatar data from Storage: " + task.Exception);
+                return;
+            }
+
+            string avatarDataString = System.Text.Encoding.UTF8.GetString(task.Result);
+            AvatarDefinition avatarDef = AvatarDefinition.FromCompressedString(avatarDataString, '|');
+            avatar.LoadAvatarDefinition(avatarDef);
+            avatar.BuildCharacter();
+            Debug.Log("Avatar customization loaded successfully.");
         });
     }
 
