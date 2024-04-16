@@ -14,6 +14,8 @@ public class BoothData
     public string LogoUrl { get; set; }
 }
 
+// Script that allows saving each booth on firebase with unique identifier, apply
+// corresponding logo if exists and setting taken status
 public class Booth : MonoBehaviour
 {
     [SerializeField] private string boothId;
@@ -25,6 +27,7 @@ public class Booth : MonoBehaviour
         FetchBoothDataAndApplyLogo();
     }
 
+    // Creating documents for each existing booth
     private void CreateOrUpdateBoothDocument()
     {
         DocumentReference boothDocRef = db.Collection("booths").Document(boothId);
@@ -58,6 +61,7 @@ public class Booth : MonoBehaviour
         });
     }
 
+    // Fetching all the taken booths to apply exisitng logos
     private void FetchBoothDataAndApplyLogo()
     {
         DocumentReference boothDocRef = db.Collection("booths").Document(boothId);
@@ -113,7 +117,8 @@ public class Booth : MonoBehaviour
         });
     }
 
-
+    // Method to apply logo after the scene loads to each booth using
+    // firebase and tags assigned to each booth logo element
     IEnumerator DownloadAndApplyLogo(string logoUrl)
     {
         Debug.Log($"Fetching logo from URL: {logoUrl} for booth {boothId}");
@@ -185,7 +190,7 @@ public class Booth : MonoBehaviour
     }
 
 
-
+    // Method that allows changing of the booth availability
     public void SetBoothAvailability(bool isAvailable)
     {
         DocumentReference boothDocRef = db.Collection("booths").Document(boothId);

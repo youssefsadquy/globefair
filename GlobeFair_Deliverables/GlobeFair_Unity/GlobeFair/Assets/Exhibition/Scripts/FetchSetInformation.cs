@@ -4,6 +4,8 @@ using Firebase.Extensions;
 using UnityEngine.UI;
 using System.Linq;
 
+// Main script for the management of the booth monitor, that allows storing of the tag
+// and passing to relevant scripts for fetching information and populating fields, prefabs
 public class FetchSetInformation : MonoBehaviour
 {
     [SerializeField] private Text businessNameText;
@@ -24,6 +26,7 @@ public class FetchSetInformation : MonoBehaviour
         });
     }
 
+    // Storing the current monitor being interacted with
     public void SetCurrentMonitorTag(string tag)
     {
         currentMonitorTag = tag;
@@ -31,6 +34,7 @@ public class FetchSetInformation : MonoBehaviour
         FetchAndDisplayBusinessInfo();
     }
 
+    // Fethcing the company information to display on the first screen using the monitor tag
     private void FetchAndDisplayBusinessInfo()
     {
         if (string.IsNullOrEmpty(currentMonitorTag))
@@ -82,6 +86,7 @@ public class FetchSetInformation : MonoBehaviour
         });
     }
 
+    // Updating the business name field
     private void UpdateUIWithBusinessName(string businessName)
     {
         businessNameText.text = businessName;

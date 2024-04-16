@@ -14,7 +14,7 @@ using UnityEngine.Networking;
 using SFB;
 using System.Collections.Generic;
 
-
+// Script that allows businesses to upload, remove, display their logo
 public class LogoUploadManager : MonoBehaviour
 {
     public Button logoUploadButton;
@@ -52,6 +52,7 @@ public class LogoUploadManager : MonoBehaviour
         RetrieveUserBoothId();
     }
 
+    // Using SFB extension to upload logo from device
     System.Collections.IEnumerator GetFilePathFromUser()
     {
         // Standalone File Browser
@@ -70,6 +71,7 @@ public class LogoUploadManager : MonoBehaviour
         yield return null;
     }
 
+    // 
     void RetrieveUserBoothId()
     {
         db.Collection("booths").WhereEqualTo("UserId", currentUser.UserId).GetSnapshotAsync().ContinueWithOnMainThread(task =>
@@ -94,6 +96,8 @@ public class LogoUploadManager : MonoBehaviour
         });
     }
 
+    // Method that uploads the logo to firebase storage under business UID
+    // and extracts download url
     void UploadLogo(string filePath)
     {
         Debug.Log($"Attempting to upload logo from path: {filePath}");
@@ -150,6 +154,7 @@ public class LogoUploadManager : MonoBehaviour
         }
     }
 
+    // Button that manages the removal of the logo from the user database
     public void RemoveLogo()
     {
         FirebaseUser currentUser = auth.CurrentUser;
@@ -179,6 +184,8 @@ public class LogoUploadManager : MonoBehaviour
         });
     }
 
+    // Saving the download url from storage to each business user document for
+    // application to their booth/dashboard
     void SaveLogoUrlToFirestore(string logoUrl)
     {
         var busUserRef = db.Collection("bus_users").Document(currentUser.UserId);
@@ -198,6 +205,8 @@ public class LogoUploadManager : MonoBehaviour
         });
     }
 
+    // Method that allows application of logo using booth tag, firebase business id
+    // to the mesh render of Stand_X_Logo_X where X is the booth number
     void ApplyLogoToBoothMaterial(string logoUrl)
     {
         GameObject boothObject = GameObject.FindWithTag(userBoothId);
@@ -228,7 +237,7 @@ public class LogoUploadManager : MonoBehaviour
         StartCoroutine(DownloadAndApplyTexture(logoUrl, logoRenderer));
     }
 
-
+    // Using the download url to fetch and apply the texture logo
     System.Collections.IEnumerator DownloadAndApplyTexture(string textureUrl, MeshRenderer renderer)
     {
         using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(textureUrl))

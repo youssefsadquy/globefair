@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using Cinemachine;
 using StarterAssets;
 
-
+// Script to save and load game states from firebase under user UID
 public class GameStateManager : MonoBehaviour
 {
     FirebaseFirestore db;
@@ -29,6 +29,7 @@ public class GameStateManager : MonoBehaviour
         LoadGameState();
     }
 
+    // Method that saves the player position and rotation on firebase
     public void SaveGameState()
     {
         if (auth.CurrentUser == null) return;
@@ -55,6 +56,7 @@ public class GameStateManager : MonoBehaviour
         });
     }
 
+    // Method to load saved position and skip showcase
     public void LoadGameState()
     {
         if (auth.CurrentUser == null)
@@ -96,7 +98,8 @@ public class GameStateManager : MonoBehaviour
         });
     }
 
-
+    // Serialising all the data to make it compatible with firebase, on loading the data
+    // is converted back for unity
     Dictionary<string, float> SerializeVector3(Vector3 vector)
     {
         return new Dictionary<string, float> { { "x", vector.x }, { "y", vector.y }, { "z", vector.z } };
@@ -126,6 +129,7 @@ public class GameStateManager : MonoBehaviour
         );
     }
 
+    // Method to apply the game save to the player armature using tag
     private void ApplyGameState(Dictionary<string, object> gameState)
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");

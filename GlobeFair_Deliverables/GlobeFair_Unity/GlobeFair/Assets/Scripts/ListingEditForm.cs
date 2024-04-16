@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Firebase.Extensions;
 using System.Collections.Generic;
 
+// Method that allows editing existing listing on a new canvas
 public class ListingEditForm : MonoBehaviour
 {
     public InputField jobTitleInputField;
@@ -36,6 +37,7 @@ public class ListingEditForm : MonoBehaviour
         editFormCanvas.SetActive(false);
     }
 
+    // edit button holds listing id to fetch all the fields content for editing
     public void OpenEditForm(Dictionary<string, object> data, string documentId)
     {
         currentDocumentId = documentId;
@@ -49,6 +51,7 @@ public class ListingEditForm : MonoBehaviour
         editFormCanvas.SetActive(true);
     }
 
+    // After editing the changes are saved on the same listing id
     public void SaveChanges()
     {
         var updatedData = new Dictionary<string, object>
@@ -79,6 +82,7 @@ public class ListingEditForm : MonoBehaviour
         });
     }
 
+    // Closes the editing canvas and does not change the fields
     public void CancelEditing()
     {
         editFormCanvas.SetActive(false);

@@ -6,6 +6,7 @@ using System.Collections;
 using Firebase.Extensions;
 using Firebase.Auth;
 
+// Method to fetch, load and display listing for the current business user
 public class LoadBusinessListings : MonoBehaviour
 {
     public GameObject listingPrefab;
@@ -28,6 +29,7 @@ public class LoadBusinessListings : MonoBehaviour
         }
     }
 
+    // Refreshing everytime the canvas is activated for user change
     private void OnEnable()
     {
         FirebaseAuth auth = FirebaseAuth.DefaultInstance;
@@ -42,6 +44,7 @@ public class LoadBusinessListings : MonoBehaviour
         }
     }
 
+    // Fetching all the listing where the business uid is equal to the current user
     public void LoadListings()
     {
         foreach (Transform child in contentPanel)
@@ -67,6 +70,7 @@ public class LoadBusinessListings : MonoBehaviour
             });
     }
 
+    // Applying the fetched listing to each prefab
     private void PopulateListing(GameObject listingInstance, DocumentSnapshot documentSnapshot)
     {
         ListingPrefabScript listingScript = listingInstance.GetComponent<ListingPrefabScript>();
@@ -80,6 +84,7 @@ public class LoadBusinessListings : MonoBehaviour
         Canvas.ForceUpdateCanvases();
     }
 
+    // Method that allows feedback showing and hiding
     public void ShowFeedback(string message, bool isSuccess)
     {
         if (feedbackText != null)

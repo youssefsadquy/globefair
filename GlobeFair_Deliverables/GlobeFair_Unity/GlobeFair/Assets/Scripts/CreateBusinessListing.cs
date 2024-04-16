@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 
+// Method to manage business positions
 public class CreateBusinessListing : MonoBehaviour
 {
     public InputField jobTitleInput;
@@ -21,6 +22,7 @@ public class CreateBusinessListing : MonoBehaviour
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
+    // Initialisation of firebase and feedback fields
     void Start()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
@@ -46,6 +48,7 @@ public class CreateBusinessListing : MonoBehaviour
         });
     }
 
+    // Method to set assigned fields to save on firebase
     void CreateListing()
     {
         if (auth.CurrentUser == null)
@@ -82,6 +85,7 @@ public class CreateBusinessListing : MonoBehaviour
         });
     }
 
+    // On submission the fields are cleared
     private void ClearInputFields()
     {
         jobTitleInput.text = "";
@@ -91,6 +95,7 @@ public class CreateBusinessListing : MonoBehaviour
         howToApplyInput.text = "";
     }
 
+    // Conditional displaying colour red/green
     private void ShowFeedback(string message, bool isSuccess)
     {
         if (feedbackText != null)
@@ -105,6 +110,7 @@ public class CreateBusinessListing : MonoBehaviour
         }
     }
 
+    // Delayed disappearance of the feedback
     private IEnumerator ClearFeedbackAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -112,6 +118,7 @@ public class CreateBusinessListing : MonoBehaviour
         ScrollToTop();
     }
 
+    // Auto scrolling after submitting
     private void ScrollToTop()
     {
         if (verticalScrollbar)

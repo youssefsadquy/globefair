@@ -6,6 +6,7 @@ using Firebase.Auth;
 using System.Collections.Generic;
 using System.Collections;
 
+// Method that allows business to create, update business information
 public class BusinessBioManager : MonoBehaviour
 {
     public InputField businessNameInputField;
@@ -27,6 +28,8 @@ public class BusinessBioManager : MonoBehaviour
     private string businessUid;
     private DocumentReference businessDocRef;
 
+    // Setting fields to detect business user and load/save
+    // their info on firebase
     void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
@@ -45,6 +48,7 @@ public class BusinessBioManager : MonoBehaviour
         }
     }
 
+    // Fetching everytime the canvas is activated in case of user change
     void OnEnable()
     {
         auth = FirebaseAuth.DefaultInstance;
@@ -65,6 +69,7 @@ public class BusinessBioManager : MonoBehaviour
         ClearInputFields();
     }
 
+    // Called after leaving the canvas to clear fields
     void ClearInputFields()
     {
         businessNameInputField.text = "";
@@ -78,6 +83,7 @@ public class BusinessBioManager : MonoBehaviour
         headquartersInputField.text = "";
     }
 
+    // Fetching business info based on business userUID
     public void LoadBusinessBio()
     {
         DocumentReference businessDocRef = db.Collection("bus_users").Document(businessUid);
@@ -102,6 +108,7 @@ public class BusinessBioManager : MonoBehaviour
         });
     }
 
+    // Method that allows editing of the fields on firebase and saving
     void SaveBusinessBio()
     {
         DocumentReference businessDocRef = db.Collection("bus_users").Document(businessUid);
@@ -133,6 +140,7 @@ public class BusinessBioManager : MonoBehaviour
         });
     }
 
+    // Feedback display conditional
     public void ShowFeedback(string message, bool isSuccess)
     {
         if (feedbackText != null)

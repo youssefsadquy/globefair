@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+// Signup method using firebase authentication to create business users and collection
 public class SignupBusinessManager : MonoBehaviour
 {
     public InputField businessNameInputField;
@@ -31,6 +32,7 @@ public class SignupBusinessManager : MonoBehaviour
         signupButton.onClick.AddListener(TryBusinessSignup);
     }
 
+    // Using the populated fields create the user
     public void TryBusinessSignup()
     {
         string businessName = businessNameInputField.text.Trim();
@@ -91,6 +93,7 @@ public class SignupBusinessManager : MonoBehaviour
         });
     }
 
+    // After successfull signup the user is signed in immediatelly
     private void SignInUser(string email, string password)
     {
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
@@ -124,6 +127,7 @@ public class SignupBusinessManager : MonoBehaviour
         feedbackText.text = "";
     }
 
+    // Showing appropriate dashboard
     private void ShowBusinessDashboard()
     {
         signupCanvas.SetActive(false);

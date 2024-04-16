@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+// Method that allows managing the loading screen appearance from any interaction
 public class LoadingManager : MonoBehaviour
 {
     public static LoadingManager Instance { get; private set; }

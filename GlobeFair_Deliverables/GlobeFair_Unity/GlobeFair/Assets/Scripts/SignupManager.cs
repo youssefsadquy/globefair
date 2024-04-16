@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Firebase.Firestore;
 using Firebase.Extensions;
 
+// Signup method using firebase authentication to create normal users and collection
 public class SignupManager : MonoBehaviour
 {
     public InputField firstNameInputField;
@@ -30,6 +31,7 @@ public class SignupManager : MonoBehaviour
         signupButton.onClick.AddListener(TrySignup);
     }
 
+    // Using the populated fields create the user and collection with their name and email
     public void TrySignup()
     {
         string email = emailInputField.text.Trim();
@@ -89,6 +91,7 @@ public class SignupManager : MonoBehaviour
         });
     }
 
+    // Signing in the user immediately on successfull signup
     private void SignInUser(string email, string password)
     {
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
@@ -110,6 +113,7 @@ public class SignupManager : MonoBehaviour
         });
     }
 
+    // Showing appropriate dashboard
     private void ShowUserDashboard()
     {
         userDashboardCanvas.SetActive(true);

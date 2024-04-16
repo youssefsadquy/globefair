@@ -10,7 +10,8 @@ using System.Collections;
 using Firebase.Extensions;
 using System;
 
-
+// Script that manages the fetching of the user dashboard with all the functionalities
+// like cv uploading/removal, personal info displaying, starting fair, logout
 public class UserDashboardManager : MonoBehaviour
 {
     public Text nameText;

@@ -3,6 +3,8 @@ using System.Collections;
 using Firebase.Auth;
 using UnityEngine.SceneManagement;
 
+// Manager of the pause menu with controlls to pause the game, save the state to firebase
+// exit the application and autosaving
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
@@ -12,6 +14,7 @@ public class PauseMenu : MonoBehaviour
     public GameStateManager gameStateManager;
     [SerializeField] private GameObject standInfoCanvas;
 
+    // Pausing game
     void Start()
     {
         Time.timeScale = 1f;
@@ -31,6 +34,7 @@ public class PauseMenu : MonoBehaviour
         StartAutoSave();
     }
 
+    // Detection of pause key
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -60,6 +64,7 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
+    // Method for saving to firebase
     public void SaveProgress()
     {
         gameStateManager.SaveGameState();
@@ -67,6 +72,7 @@ public class PauseMenu : MonoBehaviour
         StartCoroutine(SaveConfirmation());
     }
 
+    // Pop up for saving confirmation
     private IEnumerator SaveConfirmation()
     {
         if (saveConfirmationUI != null)
@@ -77,6 +83,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    // Method that redirects to the dashboard
     public void LoadDashboard()
     {
         gameStateManager.SaveGameState();
@@ -90,6 +97,7 @@ public class PauseMenu : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene("Landing");
     }
 
+    // Exit the application
     public void ConfirmSaveAndExit()
     {
         gameStateManager.SaveGameState();
@@ -117,6 +125,7 @@ public class PauseMenu : MonoBehaviour
         Application.Quit();
     }
 
+    // Autosave method to automatically call savegamestate every 4 minutes
     private void StartAutoSave()
     {
         StartCoroutine(AutoSaveRoutine());

@@ -4,6 +4,7 @@ using Firebase.Auth;
 using Firebase.Extensions;
 using Firebase.Firestore;
 
+// Using firebase authentication to login existing users
 public class LoginManager : MonoBehaviour
 {
     public InputField emailInputField;
@@ -27,6 +28,7 @@ public class LoginManager : MonoBehaviour
         loginButton.onClick.AddListener(LoginWithEmailPassword);
     }
 
+    // Firebase method that takes email and password and validates
     private void LoginWithEmailPassword()
     {
         string email = emailInputField.text;
@@ -56,6 +58,7 @@ public class LoginManager : MonoBehaviour
         });
     }
 
+    // Method that allows recognition type of user and redirection to correct dashboard
     private void CheckUserCollection(FirebaseUser user)
     {
         DocumentReference userDocRef = db.Collection("users").Document(user.UserId);
@@ -91,6 +94,7 @@ public class LoginManager : MonoBehaviour
         });
     }
 
+    // Determined dashboard and fields clearance
     private void ShowDashboard(GameObject dashboardCanvas)
     {
         dashboardCanvas.SetActive(true);

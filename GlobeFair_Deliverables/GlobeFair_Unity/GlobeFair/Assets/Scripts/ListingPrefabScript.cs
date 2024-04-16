@@ -6,6 +6,7 @@ using System.Collections;
 using System;
 using Firebase.Extensions;
 
+// Script attached to listing prefab to populate using listing id and business id
 public class ListingPrefabScript : MonoBehaviour
 {
     public Text jobTitleText;
@@ -22,6 +23,8 @@ public class ListingPrefabScript : MonoBehaviour
         loadBusinessListingsScript = FindObjectOfType<LoadBusinessListings>();
     }
 
+    // Using the business id fetches all the owned listings and populates listing
+    // scrollview with the prefabs
     public void Setup(Dictionary<string, object> data, string docId)
     {
         Debug.Log("Setting up listing with data: " + data.ToString());
@@ -57,6 +60,7 @@ public class ListingPrefabScript : MonoBehaviour
         }
     }
 
+    // Button on prefab to delete listing from firebase
     public void DeleteListing()
     {
         if (!string.IsNullOrEmpty(documentId))
@@ -84,6 +88,8 @@ public class ListingPrefabScript : MonoBehaviour
         }
     }
 
+    // Edit button attached to prefab that passes the listingid to editor canvas
+    // script to handle editing/saving
     public void OpenEditForm()
     {
         FirebaseFirestore db = FirebaseFirestore.DefaultInstance;

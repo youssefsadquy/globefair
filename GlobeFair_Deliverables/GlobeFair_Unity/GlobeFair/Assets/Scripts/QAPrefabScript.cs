@@ -6,7 +6,7 @@ using System.Collections;
 using System;
 using Firebase.Extensions;
 
-
+// Script that allows to fetch and populate preafabs for Q&As
 public class QAPrefabScript : MonoBehaviour
 {
     public Text questionText;
@@ -17,6 +17,7 @@ public class QAPrefabScript : MonoBehaviour
     private string documentId;
     private BusinessQAManager qaManager;
 
+    // Using the QAmanager for editing, while the other for populating the 2 prefab fields
     public void Setup(DocumentSnapshot snapshot, BusinessQAManager manager)
     {
         qaManager = manager;
@@ -27,6 +28,7 @@ public class QAPrefabScript : MonoBehaviour
         removeButton.onClick.AddListener(DeleteQA);
     }
 
+    // Button that uses the QA id to delete it from firebase
     private void DeleteQA()
     {
         if (!string.IsNullOrEmpty(documentId))

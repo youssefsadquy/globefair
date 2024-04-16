@@ -53,6 +53,7 @@ public class BusinessQAManager : MonoBehaviour
         }
     }
 
+    // Method attached to Q&A creator canvas to upload Q&A to firebase
     public void SubmitQA()
     {
         var newQA = new Dictionary<string, object>
@@ -89,6 +90,7 @@ public class BusinessQAManager : MonoBehaviour
         });
     }
 
+    // Fetch the current user existing Q&As
     private void LoadQAs()
     {
         foreach (Transform child in contentPanel)
@@ -113,6 +115,7 @@ public class BusinessQAManager : MonoBehaviour
             });
     }
 
+    // On click of edit button the editor fetches the q&a to be edited
     public void PopulateQAForEditing(string qaId)
     {
         currentQAId = qaId;

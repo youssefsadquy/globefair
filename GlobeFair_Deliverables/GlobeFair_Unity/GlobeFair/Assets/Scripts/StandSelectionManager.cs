@@ -8,7 +8,8 @@ using System;
 using System.Collections;
 using UnityEngine.Networking;
 
-
+// Script that allows the management of booths, business selection, application on UI
+// with selection/deselection and standard unselected pictures
 public class StandSelectionManager : MonoBehaviour
 {
     public GameObject standButtonPrefab;
@@ -57,6 +58,7 @@ public class StandSelectionManager : MonoBehaviour
         }
     }
 
+    // Grid to display only the non taken booths fetched from firebase
     void PopulateGridWithStands()
     {
         db.Collection("booths").WhereEqualTo("Taken", false).GetSnapshotAsync().ContinueWithOnMainThread(task =>
@@ -88,6 +90,7 @@ public class StandSelectionManager : MonoBehaviour
         });
     }
 
+    // Fetching the business's booth selected and display on the UI for reference to the user
     private void LoadSelectedStandId()
     {
         DocumentReference userDocRef = db.Collection("bus_users").Document(auth.CurrentUser.UserId);
@@ -125,6 +128,7 @@ public class StandSelectionManager : MonoBehaviour
         });
     }
 
+    // Method that updates the UI and firebase user/booth document to update the selection
     void SelectStand(string standId)
     {
         isGridInitialized = false;
@@ -186,6 +190,7 @@ public class StandSelectionManager : MonoBehaviour
         });
     }
 
+    // Method to unselect the booth reset fields on booths and remove from current business
     public void UnselectStand()
     {
         isGridInitialized = false;
@@ -231,7 +236,7 @@ public class StandSelectionManager : MonoBehaviour
         }
     }
 
-
+    // Fetching images for each booth
     private void UpdateSelectedBoothImage(string standId)
     {
         string spriteName = standId;
@@ -246,6 +251,7 @@ public class StandSelectionManager : MonoBehaviour
         }
     }
 
+    // Method to refresh the canvas for every action for a "live" interaction
     public void InitializeOrRefreshCanvas()
     {
         if (isGridInitialized)
@@ -274,6 +280,7 @@ public class StandSelectionManager : MonoBehaviour
         InitializeOrRefreshCanvas();
     }
 
+    // Emptying the grid for a clean initilisation
     private void ClearGrid()
     {
         foreach (Transform child in gridContent)
@@ -282,6 +289,7 @@ public class StandSelectionManager : MonoBehaviour
         }
     }
 
+    // Method that checks if the user has changed and refreshes the information
     private void AuthStateChanged(object sender, EventArgs eventArgs)
     {
         if (auth.CurrentUser != currentUser)
@@ -308,8 +316,8 @@ public class StandSelectionManager : MonoBehaviour
         auth.StateChanged -= AuthStateChanged;
     }
 
-
-
+    // Method that allows to display the logo previously uploaded by the user on the UI
+    // OR displaying placeholder
     public void LoadBusinessLogo()
     {
         if (auth.CurrentUser == null)
@@ -354,6 +362,7 @@ public class StandSelectionManager : MonoBehaviour
         logoImage.sprite = defaultLogoSprite;
     }
 
+    // Method to fetch the logo and download it for applcation
     private IEnumerator DownloadAndSetLogoImage(string logoUrl)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(logoUrl);

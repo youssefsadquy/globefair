@@ -3,6 +3,8 @@ using System.Collections;
 using Cinemachine;
 using UnityEngine.UI;
 
+// Script that showcases the game on a first initialisation of the fair
+// it detects using the gamesave if it's a first time user
 public class CameraShowcase : MonoBehaviour
 {
     public Transform[] waypoints;
@@ -39,6 +41,8 @@ public class CameraShowcase : MonoBehaviour
         }
     }
 
+    // Verifying if the any gamesave exists for the current user if not
+    // the showcase is initialised
     public void StartShowcase()
     {
         if (!GameStateManager.GameStateLoaded)
@@ -55,6 +59,7 @@ public class CameraShowcase : MonoBehaviour
         }
     }
 
+    // Camera points
     IEnumerator ShowcaseRoutine()
     {
         yield return null;
@@ -79,6 +84,8 @@ public class CameraShowcase : MonoBehaviour
         }
     }
 
+    // Method that allows the camera to move through defined point and to point
+    // at each point childer as the target
     void MoveThroughWaypoints()
     {
         if (waypointIndex < waypoints.Length)
@@ -98,6 +105,7 @@ public class CameraShowcase : MonoBehaviour
         }
     }
 
+    // Method that allows the users to skip the showcase
     void SkipShowcase()
     {
         FinishShowcase();
@@ -120,6 +128,7 @@ public class CameraShowcase : MonoBehaviour
         gameObject.SetActive(false); // Disable the showcase
     }
 
+    // Child of each waypoint for direction of camera
     void LookAtTarget(int index)
     {
         if (waypoints.Length > index && waypoints[index].childCount > 0)
@@ -129,6 +138,7 @@ public class CameraShowcase : MonoBehaviour
         }
     }
 
+    // Ending showcase
     public void DeactivateShowcase()
     {
         StopAllCoroutines();

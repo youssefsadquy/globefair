@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+// Helper method for the loading screen to set scaling of circles to a target
+// over a predefined duration
 public static class TransformExtensions
 {
     public static IEnumerator LerpScale(this Transform transform, Vector3 targetScale, float duration)

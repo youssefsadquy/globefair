@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+// Animation script assigned to circle sprite to change their size
+// to create an animation "pulse"
 public class LoadingAnimation : MonoBehaviour
 {
     [SerializeField] private Transform[] circles;

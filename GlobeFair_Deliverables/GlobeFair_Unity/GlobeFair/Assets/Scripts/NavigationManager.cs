@@ -3,7 +3,7 @@ using Firebase.Auth;
 using Firebase.Firestore;
 using Firebase.Extensions;
 
-
+// Navigation system for the landing scene that allows redirection from Fair scene
 public class NavigationManager : MonoBehaviour
 {
     public GameObject canvasLanding;
@@ -44,6 +44,7 @@ public class NavigationManager : MonoBehaviour
         }
     }
 
+    // Method that detects the user on Landing for quick signin (only from other scenes)
     public void LoadAppropriateDashboard()
     {
         FirebaseUser currentUser = auth.CurrentUser;
@@ -239,6 +240,7 @@ public class NavigationManager : MonoBehaviour
         businessQACanvas.SetActive(true);
     }
 
+    // Method to return to the BusinessCandidates canvas from any other canvas
     public void GoTobusinessCandidates()
     {
         canvasLanding.SetActive(false);

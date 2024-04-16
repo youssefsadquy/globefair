@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Script that allows the use of a custom cursor with boundaries on the current panel
 public class CursorVisibilityOnPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Texture2D mouseIcon;
@@ -10,6 +11,7 @@ public class CursorVisibilityOnPanel : MonoBehaviour, IPointerEnterHandler, IPoi
         Cursor.visible = false;
     }
 
+    // Simulating boundaries if the cursor exits the canvas
     public void OnPointerEnter(PointerEventData eventData)
     {
         Cursor.SetCursor(mouseIcon, new Vector2(16, 16), CursorMode.Auto);

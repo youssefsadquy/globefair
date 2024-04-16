@@ -4,6 +4,7 @@ using Firebase.Extensions;
 using UnityEngine.UI;
 using System.Linq;
 
+// Script to fecth and display on each booth monitor the appropriate business information
 public class BusinessInformationFetcher : MonoBehaviour
 {
     [SerializeField] private Text businessNameText;
@@ -44,6 +45,7 @@ public class BusinessInformationFetcher : MonoBehaviour
         FetchAndDisplayBusinessInformation();
     }
 
+    // Using the monitor tag to identify the current monitor and populate fields
     private void FetchAndDisplayBusinessInformation()
     {
         if (string.IsNullOrEmpty(currentMonitorTag))
@@ -93,6 +95,7 @@ public class BusinessInformationFetcher : MonoBehaviour
         });
     }
 
+    // Updating predefined fields
     private void UpdateUIWithBusinessInformation(DocumentSnapshot snapshot)
     {
         businessNameText.text = snapshot.GetValue<string>("businessName") ?? "N/A";
@@ -106,6 +109,8 @@ public class BusinessInformationFetcher : MonoBehaviour
         websiteText.text = snapshot.GetValue<string>("website") ?? "N/A";
     }
 
+    // Clearing on exit as the business coulld change and since all the monitors use
+    // a shared canvas to display the info
     public void ClearBusinessInformation()
     {
         businessNameText.text = "N/A";
