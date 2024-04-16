@@ -21,6 +21,7 @@ public class UserDashboardManager : MonoBehaviour
     public Button logoutButton;
     public GameObject landingCanvas;
     public GameObject userDashboardCanvas;
+    public Button customizeAvatarButton;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -50,6 +51,7 @@ public class UserDashboardManager : MonoBehaviour
             uploadCVButton.onClick.AddListener(() => UploadCV());
             startGameButton.onClick.AddListener(() => StartFair());
             logoutButton.onClick.AddListener(() => LogoutUser());
+            customizeAvatarButton.onClick.AddListener(() => CustomizeAvatar());
         }
         else
         {
@@ -250,6 +252,19 @@ public class UserDashboardManager : MonoBehaviour
             yield return null;
         }
         LoadingManager.Instance.DisableLoading();
+    }
+
+    // Changes scene to teh avatar customiser
+    public void CustomizeAvatar()
+    {
+        LoadingManager.Instance.EnableLoading("Loading customisation...");
+
+        StartCoroutine(LoadGameScene("PlayerCustomiser"));
+
+        if (userDashboardCanvas != null)
+        {
+            userDashboardCanvas.SetActive(false);
+        }
     }
 
     // Onclick for logout button
