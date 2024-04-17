@@ -21,6 +21,7 @@ public class NavigationManager : MonoBehaviour
     public GameObject businessCandidates;
     public GameObject userApplication;
     public GameObject passwordResetCanvas;
+    public GameObject analyticsDashboard;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -208,6 +209,7 @@ public class NavigationManager : MonoBehaviour
         userDashboardCanvas.SetActive(false);
         BusinessListings.SetActive(false);
         businessCandidates.SetActive(false);
+        analyticsDashboard.SetActive(false);
     }
 
     // Method to return to the Listings canvas from any other canvas
@@ -239,6 +241,7 @@ public class NavigationManager : MonoBehaviour
         BusinessListings.SetActive(false);
         EditListings.SetActive(false);
         businessBioCanvas.SetActive(true);
+        analyticsDashboard.SetActive(false);
     }
 
     // Method to return to the BusinessQA canvas from any other canvas
@@ -272,6 +275,24 @@ public class NavigationManager : MonoBehaviour
         BusinessListings.SetActive(false);
         EditListings.SetActive(false);
         businessCandidates.SetActive(true);
+        analyticsDashboard.SetActive(false);
+    }
+
+    // Method to return to the analyticsDashboard canvas from any other canvas
+    public void GoToanalyticsDashboard()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        canvasLoginBusiness.SetActive(false);
+        canvasSignupBusiness.SetActive(false);
+        canvasCustomization.SetActive(false);
+        businessDashboardCanvas.SetActive(false);
+        userDashboardCanvas.SetActive(false);
+        BusinessListings.SetActive(false);
+        EditListings.SetActive(false);
+        businessCandidates.SetActive(false);
+        analyticsDashboard.SetActive(true);
     }
 
     // Method to return to the userDashboard canvas from any other canvas
