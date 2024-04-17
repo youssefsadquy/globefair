@@ -20,6 +20,7 @@ public class NavigationManager : MonoBehaviour
     public GameObject businessQACanvas;
     public GameObject businessCandidates;
     public GameObject userApplication;
+    public GameObject passwordResetCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -121,6 +122,18 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         canvasLoginBusiness.SetActive(false);
         canvasSignupBusiness.SetActive(false);
+        passwordResetCanvas.SetActive(false);
+    }
+
+    // Method when the user clicks the password reset button
+    public void GoToCanvasPasswordReset()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        canvasLoginBusiness.SetActive(false);
+        canvasSignupBusiness.SetActive(false);
+        passwordResetCanvas.SetActive(true);
     }
 
     // Method when the user clicks the user signup button
@@ -131,6 +144,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(true);
         canvasLoginBusiness.SetActive(false);
         canvasSignupBusiness.SetActive(false);
+        passwordResetCanvas.SetActive(false);
     }
 
     // Method when the user clicks the business login button
@@ -141,6 +155,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         canvasLoginBusiness.SetActive(true);
         canvasSignupBusiness.SetActive(false);
+        passwordResetCanvas.SetActive(false);
     }
 
     // Method when the user clicks the business signup button
@@ -151,6 +166,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         canvasLoginBusiness.SetActive(false);
         canvasSignupBusiness.SetActive(true);
+        passwordResetCanvas.SetActive(false);
     }
 
     // Method to return to the landing canvas from any other canvas
@@ -161,6 +177,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         canvasLoginBusiness.SetActive(false);
         canvasSignupBusiness.SetActive(false);
+        passwordResetCanvas.SetActive(false);
     }
 
     // Method to return to the Customisation canvas from any other canvas
