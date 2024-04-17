@@ -3,6 +3,7 @@ using UnityEngine;
 using Firebase.Extensions;
 using UnityEngine.UI;
 using StarterAssets;
+using System.Collections.Generic;
 
 // Method that allows interaction with stands, with functionality of storing
 // and passing tags to relevant canvases
@@ -18,10 +19,18 @@ public class StandMonitor : MonoBehaviour
     [SerializeField] private BusinessFAQFetcher businessFaqFetcher;
     [SerializeField] private BusinessListingsFetcher businessListingsFetcher;
 
+    private FirebaseFirestore db;
+    private HashSet<string> uniqueUserIds = new HashSet<string>();
+
     public bool IsStandCanvasActive => standInfoCanvas.gameObject.activeSelf;
 
     private string currentMonitorTag;
     private bool isCanvasActive = false;
+
+    private void Awake()
+    {
+        db = FirebaseFirestore.DefaultInstance;
+    }
 
     private void Start()
     {
@@ -39,6 +48,13 @@ public class StandMonitor : MonoBehaviour
     {
         InteractionPromptManager.Instance.UnregisterMonitor(transform);
     }
+
+    private string GetUserIdFromAuthenticationContext()
+    {
+        Firebase.Auth.FirebaseUser user = Firebase.Auth.FirebaseAuth.DefaultInstance.CurrentUser;
+        return user != null ? user.UserId : string.Empty;
+    }
+
 
     private void Update()
     {
@@ -62,6 +78,20 @@ public class StandMonitor : MonoBehaviour
                     currentMonitorTag = gameObject.tag;
                     Debug.Log("Current Monitor Tag: " + currentMonitorTag);
                     thirdPersonController.SetInputEnabled(!isCanvasActive);
+                    string userId = GetUserIdFromAuthenticationContext();
+
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        // Call to increment total visits
+                        IncrementTotalVisits(currentMonitorTag);
+
+                        // Call to update unique visitors
+                        UpdateUniqueVisitors(currentMonitorTag, userId);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("User ID is null or empty. The user mis not logged in.");
+                    }
 
                     FetchSetInformation fetchSetInformation = standInfoCanvas.GetComponentInChildren<FetchSetInformation>(true);
                     if (fetchSetInformation != null)
@@ -136,5 +166,53 @@ public class StandMonitor : MonoBehaviour
     public string GetCurrentMonitorTag()
     {
         return currentMonitorTag;
+    }
+
+    // Method to increment total visits for current booth on firebase
+    private void IncrementTotalVisits(string standTag)
+    {
+        // The document ID from the stand tag
+        string documentId = standTag.Replace("_Monitor_1", "");
+        DocumentReference docRef = db.Collection("booths").Document(documentId);
+
+        // Increment the totalVisits field
+        db.RunTransactionAsync(transaction =>
+        {
+            return transaction.GetSnapshotAsync(docRef).ContinueWith(task =>
+            {
+                DocumentSnapshot snapshot = task.Result;
+                long newTotalVisits = snapshot.ContainsField("totalVisits") ? snapshot.GetValue<long>("totalVisits") + 1 : 1;
+                transaction.Update(docRef, "totalVisits", newTotalVisits);
+                return newTotalVisits;
+            });
+        });
+    }
+    // Method to increment unique visits for current booth on firebase
+    private void UpdateUniqueVisitors(string standTag, string userId)
+    {
+        // If not unique do not count
+        if (uniqueUserIds.Contains(userId))
+        {
+            return;
+        }
+
+        // Add the user ID to a set of unique IDs
+        uniqueUserIds.Add(userId);
+
+        // The document ID from the stand tag
+        string documentId = standTag.Replace("_Monitor_1", "");
+        DocumentReference docRef = db.Collection("booths").Document(documentId);
+
+        // Increment the uniqueVisitors field
+        db.RunTransactionAsync(transaction =>
+        {
+            return transaction.GetSnapshotAsync(docRef).ContinueWith(task =>
+            {
+                DocumentSnapshot snapshot = task.Result;
+                long newUniqueVisitors = snapshot.ContainsField("uniqueVisitors") ? snapshot.GetValue<long>("uniqueVisitors") + 1 : 1;
+                transaction.Update(docRef, "uniqueVisitors", newUniqueVisitors);
+                return newUniqueVisitors;
+            });
+        });
     }
 }
