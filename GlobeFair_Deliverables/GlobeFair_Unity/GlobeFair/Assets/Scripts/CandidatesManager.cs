@@ -5,6 +5,7 @@ using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Script that allows businesses to fetch all of their listings applications using prefabs
 public class CandidatesManager : MonoBehaviour
 {
     [SerializeField] private GameObject candidatePrefab;

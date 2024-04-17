@@ -19,6 +19,7 @@ public class NavigationManager : MonoBehaviour
     public GameObject businessBioCanvas;
     public GameObject businessQACanvas;
     public GameObject businessCandidates;
+    public GameObject userApplication;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -255,4 +256,25 @@ public class NavigationManager : MonoBehaviour
         EditListings.SetActive(false);
         businessCandidates.SetActive(true);
     }
+
+    // Method to return to the userDashboard canvas from any other canvas
+    public void GoTouserDashboard()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        userDashboardCanvas.SetActive(true);
+        userApplication.SetActive(false);
+    }
+
+    // Method to return to the userApplication canvas from any other canvas
+    public void GoTouserApplication()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        userDashboardCanvas.SetActive(false);
+        userApplication.SetActive(true);
+    }
+
 }

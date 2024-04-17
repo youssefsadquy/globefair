@@ -8,6 +8,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.IO;
 
+// Prefab script for each candidate application to populate
 public class CandidateItem : MonoBehaviour
 {
     [SerializeField] private Text firstNameText;
