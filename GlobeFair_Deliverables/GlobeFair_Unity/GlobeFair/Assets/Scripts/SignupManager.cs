@@ -4,6 +4,7 @@ using Firebase.Auth;
 using System.Collections.Generic;
 using Firebase.Firestore;
 using Firebase.Extensions;
+using System.Collections;
 
 // Signup method using firebase authentication to create normal users and collection
 public class SignupManager : MonoBehaviour
@@ -41,13 +42,13 @@ public class SignupManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            UpdateFeedback("All fields are required.");
+            ShowFeedback("All fields are required.", false);
             return;
         }
 
         if (password != confirmPassword)
         {
-            UpdateFeedback("Passwords do not match.");
+            ShowFeedback("Passwords do not match.", false);
             return;
         }
 
@@ -55,12 +56,12 @@ public class SignupManager : MonoBehaviour
         {
             if (task.IsCanceled)
             {
-                UpdateFeedback("Signup was canceled.");
+                ShowFeedback("Signup was canceled.", false);
                 return;
             }
             if (task.IsFaulted)
             {
-                UpdateFeedback("Signup encountered an error: " + task.Exception?.GetBaseException().Message);
+                ShowFeedback("Signup encountered an error", false);
                 return;
             }
 
@@ -76,16 +77,16 @@ public class SignupManager : MonoBehaviour
             {
                 if (firestoreTask.IsCanceled)
                 {
-                    UpdateFeedback("Failed to add user details to Firestore (canceled).");
+                    ShowFeedback("Failed to add user details.", false);
                     return;
                 }
                 if (firestoreTask.IsFaulted)
                 {
-                    UpdateFeedback("Failed to add user details to Firestore: " + firestoreTask.Exception?.GetBaseException().Message);
+                    ShowFeedback("Failed to add user details to Firestore", false);
                     return;
                 }
                 // Sign in the user
-                UpdateFeedback("Signup successful! Logging in...");
+                ShowFeedback("Signup successful! Logging in...", true);
                 SignInUser(email, password);
             });
         });
@@ -99,16 +100,18 @@ public class SignupManager : MonoBehaviour
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                ShowFeedback("Error occurred. Proceed with manual login", true);
                 return;
             }
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                ShowFeedback("Error occurred. Proceed with manual login", true);
                 return;
             }
 
             // User signed in successfully, redirect to user dashboard
-            Debug.Log("User signed in successfully");
+            ShowFeedback("Logged in successfully. Welcome!", true);
             ShowUserDashboard();
         });
     }
@@ -132,10 +135,25 @@ public class SignupManager : MonoBehaviour
         // Reset feedback message
         feedbackText.text = "";
     }
-
-    private void UpdateFeedback(string message)
+    // Displaying feedback conditional
+    private void ShowFeedback(string message, bool isSuccess)
     {
-        feedbackText.text = message;
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+        else
+        {
+            Debug.LogError("Feedback text object not found!");
+        }
+    }
+
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        feedbackText.text = "";
     }
 
     void OnDestroy()

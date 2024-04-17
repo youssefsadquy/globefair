@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Firebase.Auth;
 using Firebase.Extensions;
 using Firebase.Firestore;
+using System.Collections;
 
 // Using firebase authentication to login existing users
 public class LoginManager : MonoBehaviour
@@ -36,7 +37,7 @@ public class LoginManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            feedbackText.text = "Email and Password are required.";
+            ShowFeedback("Email and Password are required.", false);
             return;
         }
 
@@ -44,16 +45,17 @@ public class LoginManager : MonoBehaviour
         {
             if (task.IsCanceled)
             {
-                feedbackText.text = "SignInWithEmailAndPasswordAsync was canceled.";
+                ShowFeedback("SignIn was canceled.", false);
                 return;
             }
             if (task.IsFaulted)
             {
-                feedbackText.text = "SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception;
+                ShowFeedback("SignIn encountered an error", false);
                 return;
             }
 
             // Firebase user signed in successfully
+            ShowFeedback("Signed in successfully. Logging in...", true);
             CheckUserCollection(task.Result.User);
         });
     }
@@ -66,10 +68,11 @@ public class LoginManager : MonoBehaviour
         {
             if (userTask.IsFaulted || userTask.IsCanceled)
             {
-                feedbackText.text = "Error getting user document: " + userTask.Exception;
+                ShowFeedback("Error getting user", false);
             }
             else if (userTask.Result.Exists)
             {
+                ShowFeedback("Welcome back!", true);
                 ShowDashboard(userDashboardCanvas);
             }
             else
@@ -79,15 +82,16 @@ public class LoginManager : MonoBehaviour
                 {
                     if (busUserTask.IsFaulted || busUserTask.IsCanceled)
                     {
-                        feedbackText.text = "Error getting business user document: " + busUserTask.Exception;
+                        ShowFeedback("Error getting business user", false);
                     }
                     else if (busUserTask.Result.Exists)
                     {
+                        ShowFeedback("Welcome to your business dashboard!", true);
                         ShowDashboard(businessDashboardCanvas);
                     }
                     else
                     {
-                        feedbackText.text = "User does not exist!";
+                        ShowFeedback("User does not exist!", false);
                     }
                 });
             }
@@ -109,6 +113,27 @@ public class LoginManager : MonoBehaviour
         passwordInputField.text = "";
 
         // Reset feedback message
+        feedbackText.text = "";
+    }
+
+    // Displaying feedback conditional
+    private void ShowFeedback(string message, bool isSuccess)
+    {
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+        else
+        {
+            Debug.LogError("Feedback text object not found!");
+        }
+    }
+
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         feedbackText.text = "";
     }
 

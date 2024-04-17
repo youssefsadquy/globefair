@@ -4,6 +4,7 @@ using Firebase.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 
 // Signup method using firebase authentication to create business users and collection
 public class SignupBusinessManager : MonoBehaviour
@@ -42,13 +43,13 @@ public class SignupBusinessManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(businessName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
-            UpdateFeedback("All fields are required.");
+            ShowFeedback("All fields are required.", false);
             return;
         }
 
         if (password != confirmPassword)
         {
-            UpdateFeedback("Passwords do not match.");
+            ShowFeedback("Passwords do not match.", false);
             return;
         }
 
@@ -57,12 +58,12 @@ public class SignupBusinessManager : MonoBehaviour
         {
             if (task.IsCanceled)
             {
-                UpdateFeedback("Signup was canceled.");
+                ShowFeedback("Signup was canceled.", false);
                 return;
             }
             if (task.IsFaulted)
             {
-                UpdateFeedback("Signup encountered an error: " + task.Exception?.GetBaseException().Message);
+                ShowFeedback("Signup encountered an error", false);
                 return;
             }
 
@@ -79,15 +80,15 @@ public class SignupBusinessManager : MonoBehaviour
             {
                 if (firestoreTask.IsCanceled)
                 {
-                    UpdateFeedback("Failed to add business user details to Firestore (canceled).");
+                    ShowFeedback("Failed to add business user details.", false);
                     return;
                 }
                 if (firestoreTask.IsFaulted)
                 {
-                    UpdateFeedback("Failed to add business user details to Firestore: " + firestoreTask.Exception?.GetBaseException().Message);
+                    ShowFeedback("Failed to add business user details", false);
                     return;
                 }
-                UpdateFeedback("Business signup successful! Logging in...");
+                ShowFeedback("Business signup successful! Logging in...", true);
                 SignInUser(email, password);
             });
         });
@@ -136,9 +137,25 @@ public class SignupBusinessManager : MonoBehaviour
         ResetFieldsAndFeedback();
     }
 
-    private void UpdateFeedback(string message)
+    // Displaying feedback conditional
+    private void ShowFeedback(string message, bool isSuccess)
     {
-        feedbackText.text = message;
+        if (feedbackText != null)
+        {
+            feedbackText.text = message;
+            feedbackText.color = isSuccess ? Color.green : Color.red;
+            StartCoroutine(ClearFeedbackAfterDelay(3));
+        }
+        else
+        {
+            Debug.LogError("Feedback text object not found!");
+        }
+    }
+
+    private IEnumerator ClearFeedbackAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        feedbackText.text = "";
     }
 
     void OnDestroy()
