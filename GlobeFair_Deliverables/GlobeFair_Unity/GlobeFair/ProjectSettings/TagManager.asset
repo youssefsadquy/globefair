@@ -71,6 +71,25 @@ TagManager:
   - FeedbackText1
   - Stand_15_Monitor_1
   - interactPrompt
+  - Stand_1_Monitor_1
+  - Stand_3_Monitor_1
+  - Stand_4_Monitor_1
+  - Stand_5_Monitor_1
+  - Stand_6_Monitor_1
+  - Stand_7_Monitor_1
+  - Stand_8_Monitor_1
+  - Stand_9_Monitor_1
+  - Stand_10_Monitor_1
+  - Stand_11_Monitor_1
+  - Stand_12_Monitor_1
+  - Stand_13_Monitor_1
+  - Stand_14_Monitor_1
+  - Stand_16_Monitor_1
+  - Stand_17_Monitor_1
+  - Stand_18_Monitor_1
+  - Stand_19_Monitor_1
+  - Stand_20_Monitor_1
+  - Stand_21_Monitor_1
   layers:
   - Default
   - TransparentFX
