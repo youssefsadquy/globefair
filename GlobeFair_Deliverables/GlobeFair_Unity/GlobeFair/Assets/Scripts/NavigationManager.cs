@@ -22,6 +22,8 @@ public class NavigationManager : MonoBehaviour
     public GameObject userApplication;
     public GameObject passwordResetCanvas;
     public GameObject analyticsDashboard;
+    public GameObject settingsCanvas;
+    public GameObject quitCanvas;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -110,6 +112,8 @@ public class NavigationManager : MonoBehaviour
         canvasSignupBusiness.SetActive(false);
         userDashboardCanvas.SetActive(false);
         businessDashboardCanvas.SetActive(false);
+        settingsCanvas.SetActive(false);
+        quitCanvas.SetActive(false);
 
         canvas.SetActive(true);
     }
@@ -124,6 +128,30 @@ public class NavigationManager : MonoBehaviour
         canvasLoginBusiness.SetActive(false);
         canvasSignupBusiness.SetActive(false);
         passwordResetCanvas.SetActive(false);
+    }
+
+    // Method to open settings
+    public void GoTosettings()
+    {
+        settingsCanvas.SetActive(true);
+    }
+
+    // Method to close settings
+    public void CloseSettings()
+    {
+        settingsCanvas.SetActive(false);
+    }
+
+    // Method to quit application
+    public void GoToquit()
+    {
+        quitCanvas.SetActive(true);
+    }
+
+    // Method to quit application
+    public void CloseQuit()
+    {
+        quitCanvas.SetActive(false);
     }
 
     // Method when the user clicks the password reset button
