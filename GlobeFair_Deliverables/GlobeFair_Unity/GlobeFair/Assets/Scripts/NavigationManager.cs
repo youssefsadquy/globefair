@@ -28,10 +28,13 @@ public class NavigationManager : MonoBehaviour
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
+    private Animator animator;
+
     void Awake()
     {
         auth = FirebaseAuth.DefaultInstance;
         db = FirebaseFirestore.DefaultInstance;
+        animator = GetComponent<Animator>();
     }
 
     void Start()
@@ -134,6 +137,7 @@ public class NavigationManager : MonoBehaviour
     public void GoTosettings()
     {
         settingsCanvas.SetActive(true);
+        animator.Play("SlideUp");
     }
 
     // Method to close settings
@@ -146,6 +150,7 @@ public class NavigationManager : MonoBehaviour
     public void GoToquit()
     {
         quitCanvas.SetActive(true);
+        animator.Play("exitAnimatorLanding");
     }
 
     // Method to quit application
