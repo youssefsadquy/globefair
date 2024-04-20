@@ -68,7 +68,7 @@ public class SaveCustomization : MonoBehaviour
                 if (urlTask.IsFaulted || urlTask.IsCanceled)
                 {
                     Debug.LogError("Error getting avatar data download URL: " + urlTask.Exception);
-                    ShowFeedback("Failed to retrieve download URL.", false);
+                    ShowFeedback("Failed to retrieve customisation.", false);
                     return;
                 }
 
@@ -86,8 +86,8 @@ public class SaveCustomization : MonoBehaviour
         {
             if (task.IsFaulted || task.IsCanceled)
             {
-                Debug.LogError("Error saving download URL to Firestore: " + task.Exception);
-                ShowFeedback("Failed to save URL to Firestore.", false);
+                Debug.Log("Error saving download URL to Firestore: " + task.Exception);
+                //ShowFeedback("Failed to save customisation.", false);
             }
             else
             {
