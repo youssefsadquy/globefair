@@ -4,6 +4,7 @@ using Firebase.Extensions;
 using UnityEngine.UI;
 using StarterAssets;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 // Method that allows interaction with stands, with functionality of storing
 // and passing tags to relevant canvases
@@ -18,6 +19,8 @@ public class StandMonitor : MonoBehaviour
     public Texture2D mouseIcon;
     [SerializeField] private BusinessFAQFetcher businessFaqFetcher;
     [SerializeField] private BusinessListingsFetcher businessListingsFetcher;
+    [SerializeField] private Dropdown languageDropdown;
+    public static StandMonitor Instance;
 
     private FirebaseFirestore db;
     private HashSet<string> uniqueUserIds = new HashSet<string>();
@@ -30,12 +33,42 @@ public class StandMonitor : MonoBehaviour
     private void Awake()
     {
         db = FirebaseFirestore.DefaultInstance;
+
+        Instance = this;
     }
 
     private void Start()
     {
         standInfoCanvas.gameObject.SetActive(false);
         ToggleCursor(false);
+        languageDropdown.options.Clear();
+        foreach (var language in languageCodeDictionary)
+        {
+            languageDropdown.options.Add(new Dropdown.OptionData(language.Key));
+        }
+
+        languageDropdown.value = languageDropdown.options.FindIndex(option => option.text == "English");
+        PlayerPrefs.SetString("selectedLanguage", languageCodeDictionary["English"]);
+        PlayerPrefs.Save();
+
+        languageDropdown.onValueChanged.AddListener(delegate
+        {
+            LanguageChanged(languageDropdown.value);
+        });
+    }
+
+    // Method that allows changing of language with Google API and default localisation
+    private void LanguageChanged(int index)
+    {
+        Debug.Log("Language Changed triggered.");
+
+        string selectedLanguage = languageDropdown.options[index].text;
+        string selectedLanguageCode = languageCodeDictionary.ContainsKey(selectedLanguage) ? languageCodeDictionary[selectedLanguage] : "en";
+
+        PlayerPrefs.SetString("selectedLanguage", selectedLanguageCode);
+        PlayerPrefs.Save();
+
+        LocalisationManager.Instance.UpdateUILocalisation(selectedLanguageCode);
     }
 
     // Allow register and unregister monitors on distance
@@ -215,4 +248,13 @@ public class StandMonitor : MonoBehaviour
             });
         });
     }
+
+    // Dictionary to map language names to their codes
+    private Dictionary<string, string> languageCodeDictionary = new Dictionary<string, string>
+    {
+        { "English", "en" },
+        { "Spanish", "es" },
+        { "French", "fr" },
+        { "Italian", "it" },
+    };
 }

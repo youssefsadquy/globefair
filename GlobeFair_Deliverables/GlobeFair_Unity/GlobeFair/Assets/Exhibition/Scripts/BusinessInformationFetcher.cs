@@ -3,6 +3,7 @@ using UnityEngine;
 using Firebase.Extensions;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.Networking;
 
 // Script to fecth and display on each booth monitor the appropriate business information
 public class BusinessInformationFetcher : MonoBehaviour
@@ -107,6 +108,39 @@ public class BusinessInformationFetcher : MonoBehaviour
         headquartersText.text = snapshot.GetValue<string>("headquarters") ?? "N/A";
         contactEmailText.text = snapshot.GetValue<string>("contactEmail") ?? "N/A";
         websiteText.text = snapshot.GetValue<string>("website") ?? "N/A";
+
+        TranslateFieldsIfNeeded();
+    }
+
+    // Translate fields if the selected language is not English
+    private void TranslateFieldsIfNeeded()
+    {
+        string targetLanguage = PlayerPrefs.GetString("selectedLanguage", "en");
+
+        if (targetLanguage != "en")
+        {
+            TranslateField(descriptionText, targetLanguage);
+            TranslateField(missionText, targetLanguage);
+            TranslateField(industryText, targetLanguage);
+            TranslateField(foundedText, targetLanguage);
+            TranslateField(headquartersText, targetLanguage);
+        }
+    }
+
+    // Translate only selected fields if not empty
+    private void TranslateField(Text uiElement, string targetLanguage)
+    {
+        if (uiElement.text == "N/A")
+        {
+            Debug.Log("No text to translate");
+            return;
+        }
+
+        // Perform the translation
+        TranslationManager.Instance.TranslateText(uiElement.text, targetLanguage, translatedText =>
+        {
+            uiElement.text = UnityWebRequest.UnEscapeURL(translatedText);
+        });
     }
 
     // Clearing on exit as the business coulld change and since all the monitors use
