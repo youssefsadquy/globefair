@@ -24,6 +24,8 @@ public class NavigationManager : MonoBehaviour
     public GameObject analyticsDashboard;
     public GameObject settingsCanvas;
     public GameObject quitCanvas;
+    public GameObject chatUsers;
+    public GameObject chatBusinesses;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -243,6 +245,7 @@ public class NavigationManager : MonoBehaviour
         BusinessListings.SetActive(false);
         businessCandidates.SetActive(false);
         analyticsDashboard.SetActive(false);
+        chatBusinesses.SetActive(false);
     }
 
     // Method to return to the Listings canvas from any other canvas
@@ -328,6 +331,23 @@ public class NavigationManager : MonoBehaviour
         analyticsDashboard.SetActive(true);
     }
 
+    public void GoTobusinessChat()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        canvasLoginBusiness.SetActive(false);
+        canvasSignupBusiness.SetActive(false);
+        canvasCustomization.SetActive(false);
+        businessDashboardCanvas.SetActive(false);
+        userDashboardCanvas.SetActive(false);
+        BusinessListings.SetActive(false);
+        EditListings.SetActive(false);
+        businessCandidates.SetActive(false);
+        analyticsDashboard.SetActive(false);
+        chatBusinesses.SetActive(true);
+    }
+
     // Method to return to the userDashboard canvas from any other canvas
     public void GoTouserDashboard()
     {
@@ -336,6 +356,7 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         userDashboardCanvas.SetActive(true);
         userApplication.SetActive(false);
+        chatUsers.SetActive(false);
     }
 
     // Method to return to the userApplication canvas from any other canvas
@@ -346,6 +367,16 @@ public class NavigationManager : MonoBehaviour
         canvasSignup.SetActive(false);
         userDashboardCanvas.SetActive(false);
         userApplication.SetActive(true);
+    }
+
+    public void GoTouserChat()
+    {
+        canvasLanding.SetActive(false);
+        canvasLogin.SetActive(false);
+        canvasSignup.SetActive(false);
+        userDashboardCanvas.SetActive(false);
+        userApplication.SetActive(false);
+        chatUsers.SetActive(true);
     }
 
 }
