@@ -32,7 +32,7 @@ The project files for GlobeFair are organized within several directories under t
 
 ## Running the Software  
 1. Clone the repository or download the project to your local machine. 
-2. Navigate to the `GlobeFair_Deliverables/Executable` directory within the cloned or downloaded project and extract. 
+2. Navigate to the `GlobeFair_Deliverables/Executable.zip` directory within the cloned or downloaded project and extract. 
 3. Locate and run `GlobeFair.exe` to launch the application.
 
 ## System Requirements
