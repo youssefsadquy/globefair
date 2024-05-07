@@ -82,12 +82,33 @@ public class SaveCustomization : MonoBehaviour
     private void SaveDownloadUrlToFirestore(string downloadUrl)
     {
         DocumentReference userDocRef = db.Collection("gameStates").Document(currentUser.UserId);
-        userDocRef.UpdateAsync("playerCustomisation", downloadUrl).ContinueWithOnMainThread((task) =>
+        userDocRef.UpdateAsync("playerCustomisation", downloadUrl).ContinueWithOnMainThread((updateTask) =>
         {
-            if (task.IsFaulted || task.IsCanceled)
+            if (updateTask.IsFaulted || updateTask.IsCanceled)
             {
-                Debug.Log("Error saving download URL to Firestore: " + task.Exception);
-                //ShowFeedback("Failed to save customisation.", false);
+                // If the update fails, create the document instead
+                var exception = updateTask.Exception.Flatten().InnerException as FirestoreException;
+                if (exception != null && exception.ErrorCode == FirestoreError.NotFound)
+                {
+                    userDocRef.SetAsync(new { playerCustomisation = downloadUrl }).ContinueWithOnMainThread((setTask) =>
+                    {
+                        if (setTask.IsFaulted || setTask.IsCanceled)
+                        {
+                            Debug.LogError("Error creating new gameState in Firestore: " + setTask.Exception);
+                            ShowFeedback("Failed to create customisation.", false);
+                        }
+                        else
+                        {
+                            Debug.Log("GameState created and customisation saved successfully.");
+                            ShowFeedback("Customization saved successfully.", true);
+                        }
+                    });
+                }
+                else
+                {
+                    Debug.LogError("Error saving download URL to Firestore: " + updateTask.Exception);
+                    ShowFeedback("Failed to save customisation.", false);
+                }
             }
             else
             {

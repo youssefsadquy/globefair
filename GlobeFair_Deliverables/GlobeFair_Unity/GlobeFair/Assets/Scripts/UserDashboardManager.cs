@@ -206,12 +206,12 @@ public class UserDashboardManager : MonoBehaviour
             if (task.IsFaulted || task.IsCanceled)
             {
                 Debug.LogError("Error deleting CV from storage: " + task.Exception);
-                ShowFeedback("Error deleting CV from storage: " + task.Exception, false);
+                ShowFeedback("CV not found", false);
             }
             else
             {
                 Debug.Log("CV deleted from storage successfully.");
-                ShowFeedback("CV deleted from storage successfully.", true);
+                ShowFeedback("CV deleted from storage successfully", true);
 
                 DocumentReference userDocRef = db.Collection("users").Document(currentUser.UserId);
                 userDocRef.UpdateAsync("cv", FieldValue.Delete).ContinueWithOnMainThread(task =>
@@ -219,12 +219,12 @@ public class UserDashboardManager : MonoBehaviour
                     if (task.IsFaulted || task.IsCanceled)
                     {
                         Debug.LogError("Error removing CV from Firestore: " + task.Exception);
-                        ShowFeedback("Error removing CV from Firestore: " + task.Exception, false);
+                        ShowFeedback("CV not found", false);
                     }
                     else
                     {
                         Debug.Log("CV removed from Firestore successfully.");
-                        ShowFeedback("CV removed from Firestore successfully.", true);
+                        ShowFeedback("CV removed successfully", true);
                     }
                 });
             }

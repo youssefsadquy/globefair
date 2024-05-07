@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using Firebase.Extensions;
 using System.Collections.Generic;
 using System.Collections;
+using System.IO;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 // Script to fetch associated business booth data Total Visit and Unique visitors with
 // total applicant number
@@ -238,6 +241,69 @@ public class BusinessAnalyticsDashboard : MonoBehaviour
             ShowFeedback("Successfully reset unique visitors data.", true);
             confirmResetUniqueVisitors = false;
         }
+    }
+
+    // Method to export generated report to txt file
+    public void ExportAnalyticsToText()
+    {
+        string reportPath = Application.persistentDataPath + "/AnalyticsReport.txt";
+        string reportContent = GenerateReportContent();
+
+        try
+        {
+            File.WriteAllText(reportPath, reportContent);
+            ShowFeedback("Report generated successfully. Path: " + reportPath, true);
+            OpenReport(reportPath);
+        }
+        catch (System.Exception ex)
+        {
+            ShowFeedback("Failed to generate report.", false);
+        }
+    }
+
+    // Method to open report after downloading
+    private void OpenReport(string filePath)
+    {
+        try
+        {
+            Process.Start(filePath);
+        }
+        catch (System.Exception ex)
+        {
+            ShowFeedback("Failed to open report.", false);
+        }
+    }
+
+    // Method to build report reusing fetching methods for analytics
+    private string GenerateReportContent()
+    {
+        System.Text.StringBuilder reportBuilder = new System.Text.StringBuilder();
+        int randomNumber = UnityEngine.Random.Range(0, 1000000);
+        string reportNumber = "RPT-" + "-" + randomNumber.ToString("D6");
+
+        // Header
+        reportBuilder.AppendLine("GLOBEFAIR");
+        reportBuilder.AppendLine();
+
+        // General info
+        reportBuilder.AppendLine("======= Report Info =======");
+        reportBuilder.AppendLine("Analytics Report");
+        reportBuilder.AppendLine("Report ID: " + reportNumber);
+        reportBuilder.AppendLine("Export Date: " + System.DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+        reportBuilder.AppendLine("===========================");
+        reportBuilder.AppendLine();
+
+        // Analytics data
+        reportBuilder.AppendLine("======== Analytics ========");
+        reportBuilder.AppendLine("Total Visits: " + totalVisitsText.text);
+        reportBuilder.AppendLine("Unique Visitors: " + uniqueVisitorsText.text);
+        reportBuilder.AppendLine("Total Applicants: " + totalApplicantsText.text);
+        reportBuilder.AppendLine("====== End of Report ======");
+        reportBuilder.AppendLine();
+
+        // Footer
+        reportBuilder.AppendLine("All information is confidential and intended for the authorised user only.");
+        return reportBuilder.ToString();
     }
 
     // Displaying conditional feedback

@@ -145,7 +145,9 @@ public class StandSelectionManager : MonoBehaviour
             var updateDataPrevious = new Dictionary<string, object>
         {
             { "Taken", false },
-            { "UserId", FieldValue.Delete }
+            { "UserId", FieldValue.Delete },
+            { "uniqueVisitors", 0 },
+            { "totalVisits", 0 }
         };
             previousStandRef.UpdateAsync(updateDataPrevious).ContinueWithOnMainThread(previousUpdateTask =>
             {

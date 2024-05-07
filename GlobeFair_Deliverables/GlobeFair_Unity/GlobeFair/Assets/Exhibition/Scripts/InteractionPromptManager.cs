@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-
 // Method that allows to display the interaction prompt on proximity
 public class InteractionPromptManager : MonoBehaviour
 {
@@ -17,7 +16,7 @@ public class InteractionPromptManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
