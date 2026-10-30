@@ -1,5 +1,23 @@
 # GlobeFair
 
+> **University of Leicester final-year project (October 2023 to May 2024).**
+> This is the submitted version, migrated from [GitLab](https://gitlab.com/youssefsadquy/globefair) with its commit history and original dates.
+> A newer **web version** (WebGL, hosted on Firebase) is in [globefair-web](https://github.com/youssefsadquy/globefair-web), with a live demo at <https://globefair-46eb2.web.app/>.
+
+## About this copy
+
+Before publishing, these were removed from every commit:
+
+- Firebase configuration files (`google-services.json`, `GoogleService-Info.plist`, `google-services-desktop.json`, `google-services.xml`) and a hard-coded Google Cloud API key in `TranslationManager.cs` (now `YOUR_GOOGLE_TRANSLATE_API_KEY`).
+- Unity caches (`Library`, `Temp`, `Logs`, `UserSettings`) and the built `Executable` folder and zip.
+- Every file larger than 5 MB, because of GitHub's size limits. This mainly affects large 3D models, textures and audio. The complete project is still on GitLab.
+
+To run it you need your own Firebase project: add its config files under `Assets/` (and `Assets/StreamingAssets/`), and your own translation API key in `TranslationManager.cs`.
+
+## Third-party content
+
+The project uses Unity packages and asset packs, each with its own licence: TextMesh Pro, Unity Starter Assets, the Firebase Unity SDK, UMA, StandaloneFileBrowser, and the Exhibition and MinimalistBedroom packs. The repository owner states that the asset packs were bought with the right to redistribute them as free or open material. Check each pack's own licence terms before reusing it.
+
 ## Project Description
 Globefair, has been influenced by the fast evolving world and digitalisation of almost every dailay aspect of life. It was born from the idea of creating a powerful software capable of reinventing the traditional career fair into a more sophisticated and enjoyable virtual experience. Unity has been the core system of the project, allowing to build the system and to redefine the different aspect of networking and career opportunities without border limits.
 
