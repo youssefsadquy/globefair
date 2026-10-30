@@ -2,7 +2,7 @@
 
 > **University of Leicester final-year project (October 2023 to May 2024).**
 > This is the submitted version, migrated from [GitLab](https://gitlab.com/youssefsadquy/globefair) with its commit history and original dates.
-> A newer **web version** (WebGL, hosted on Firebase) is in [globefair-web](https://github.com/youssefsadquy/globefair-web), with a live demo at <https://globefair-46eb2.web.app/>.
+> A newer **web version** (WebGL, hosted on Firebase) is in [globefair-web](https://github.com/youssefsadquy/globefair-web), with a [live demo](https://globefair-46eb2.web.app/) (password on request).
 
 ## About this copy
 
@@ -16,7 +16,7 @@ To run it you need your own Firebase project: add its config files under `Assets
 
 ## Third-party content
 
-The project uses Unity packages and asset packs, each with its own licence: TextMesh Pro, Unity Starter Assets, the Firebase Unity SDK, UMA, StandaloneFileBrowser, and the Exhibition and MinimalistBedroom packs. The repository owner states that the asset packs were bought with the right to redistribute them as free or open material. Check each pack's own licence terms before reusing it.
+The project uses Unity packages and asset packs, each with its own licence: TextMesh Pro, Unity Starter Assets, the Firebase Unity SDK, UMA, StandaloneFileBrowser, and the Exhibition and MinimalistBedroom packs. Check each pack's own licence terms before reusing it.
 
 ## Project Description
 Globefair, has been influenced by the fast evolving world and digitalisation of almost every dailay aspect of life. It was born from the idea of creating a powerful software capable of reinventing the traditional career fair into a more sophisticated and enjoyable virtual experience. Unity has been the core system of the project, allowing to build the system and to redefine the different aspect of networking and career opportunities without border limits.
